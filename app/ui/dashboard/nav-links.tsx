@@ -4,6 +4,8 @@ import {
   HomeIcon,
   DocumentDuplicateIcon,
   ShoppingBagIcon,
+  ChartBarIcon,
+  BanknotesIcon
   
 
 
@@ -27,8 +29,8 @@ const links = [
     icon: DocumentDuplicateIcon,
   },
   { name: 'SellerDashboard', href: '/dashboard/SellerDashboard', icon: UserGroupIcon },
-  { name: 'SellerOrderStatusChart', href: '/dashboard/SellerOrderStatusChart', icon: UserGroupIcon },
-  { name: 'SellerSalesChart', href: '/dashboard/SellerSalesChart', icon: UserGroupIcon },
+  { name: 'SellerOrderStatusChart', href: '/dashboard/SellerOrderStatusChart', icon: ChartBarIcon },
+  { name: 'SellerSalesChart', href: '/dashboard/SellerSalesChart', icon: BanknotesIcon },
   { name: 'SellerTopProducts', href: '/dashboard/SellerTopProducts', icon: UserGroupIcon },
   { name: 'Orders', href: '/dashboard/Orders', icon: UserGroupIcon },
   { name: 'LiveOrders', href: '/dashboard/LiveOrders', icon: UserGroupIcon },

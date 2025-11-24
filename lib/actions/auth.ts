@@ -5,6 +5,9 @@ import { registerSchema } from "../validation/auth";
 import bcrypt from "bcrypt";
 import { createUser } from "../data/auth";
 import { EmailAlreadyExistsError} from "../definitions/errors";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
+
 
 export async function registerUser(
   prevState: RegisterState,
@@ -65,5 +68,27 @@ export async function registerUser(
         _form: ['Unexpected error. Please try again later.'],
       },
     };
+  }
+}
+
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  // Your authentication logic here (copied from original file)
+  try {
+    await signIn('credentials', formData);
+    return undefined;
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
   }
 }
