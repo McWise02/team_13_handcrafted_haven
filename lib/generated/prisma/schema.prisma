@@ -40,12 +40,16 @@ model User {
 }
 
 model Product {
-  id          String          @id @default(uuid())
+  id          String           @id @default(uuid())
   userId      String
-  user        User            @relation(fields: [userId], references: [id])
-  category    ProductCategory
-  description String
-  price       Int
+  user        User             @relation(fields: [userId], references: [id])
+  title       String
+  slug        String?          @unique
+  description String?
+  price       Int // in cents! e.g., 2999 = $29.99
+  images      String[] // array of image URLs
+  category    ProductCategory?
+  published   Boolean          @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
