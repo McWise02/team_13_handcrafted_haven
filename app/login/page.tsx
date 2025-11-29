@@ -16,7 +16,32 @@ export default function LoginPage() {
             </div>
         </div>
   );
-}import AcmeLogo from '@/app/ui/acme-logo';
+}
+
+
+/*import LoginForm from '@/app/ui/login-form';
+import Image from 'next/image';
+import { Suspense } from 'react';
+ 
+export default function LoginPage() {
+  return (
+        <div className="flex h-[700px] w-full">
+            <div className="w-full hidden md:inline-block relative">
+                <Image className="h-full object-cover" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/login/leftSideImage.png" alt="leftSideImage" fill unoptimized />
+            </div>
+        
+            <div className="w-full flex flex-col items-center justify-center">
+        <Suspense>
+          <LoginForm />
+        </Suspense>
+            </div>
+        </div>
+  );
+}
+*/
+/*
+
+import AcmeLogo from '@/app/ui/acme-logo';
 import LoginForm from '@/app/ui/login-form';
 import { Suspense } from 'react';
  
@@ -36,3 +61,4 @@ export default function LoginPage() {
     </main>
   );
 }
+  */

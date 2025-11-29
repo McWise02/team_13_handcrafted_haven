@@ -4,17 +4,32 @@
 import { useActionState } from 'react';
 import {  registerUser } from '@/lib/actions/auth';
 import type { RegisterState } from '@/lib/definitions/form-states';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function RegisterForm() {
+  
     const initialRegisterState : RegisterState = {
     message: null,
     errors: {},
   };
+  
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/login';
   const [state, formAction] = useActionState<RegisterState, FormData>(
     registerUser,
     initialRegisterState,
   );
 
+  useEffect(() => {
+    if (state.message && Object.keys(state.errors || {}).length === 0) {
+      if (typeof window !== 'undefined') {
+        const url = new URL(callbackUrl, window.location.origin);
+        url.searchParams.set('message', state.message);
+        window.location.href = url.toString();
+      }
+    }
+  }, [state.message, state.errors, callbackUrl]);
   return (
     <div className="w-full max-w-md">
       <div className="mb-6 text-center">
@@ -157,6 +172,7 @@ export default function RegisterForm() {
             placeholder="Doe"
             aria-describedby="name-error"
           />
+          
           <div id="name-error" aria-live="polite" aria-atomic="true">
             {state.errors?.lastName?.map((error) => (
               <p key={error} className="mt-1 text-xs text-red-400">
@@ -165,6 +181,7 @@ export default function RegisterForm() {
             ))}
           </div>
         </div>
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
         {/* Submit */}
         <button

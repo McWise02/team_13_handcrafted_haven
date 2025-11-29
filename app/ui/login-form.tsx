@@ -1,77 +1,64 @@
 'use client';
- 
-import { lusitana } from '@/app/ui/fonts';
+
+import { useActionState } from 'react';
+import { authenticate } from '@/lib/actions/auth';
+import { useSearchParams } from 'next/navigation';
+import { Button } from '@/app/ui/button';
+import Link from 'next/link';
 import {
   AtSymbolIcon,
   KeyIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from '@/app/ui/button';
-import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
-import { useSearchParams } from 'next/navigation';
- 
+
+
 export default function LoginForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined,
-  );
- 
-  return (
-    <form action={formAction} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please log in to continue.
-        </h1>
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+    const [errorMessage, formAction, isPending] = useActionState(
+        authenticate,
+        undefined,
+        );
+
+    return (
+        <form action={formAction} className="md:w-96 w-80 flex flex-col items-center justify-center">
+            <h2 className="text-4xl text-gray-900 font-medium">Sign in</h2>
+            <p className="text-sm text-gray-500/90 mt-3">Welcome back! Please sign in to continue</p>
+
+
+            <div className="flex items-center gap-4 w-full my-5">
+                <div className="w-full h-px bg-gray-300/90"></div>
+                <p className="w-full text-nowrap text-sm text-gray-500/90">or sign in with email</p>
+                <div className="w-full h-px bg-gray-300/90"></div>
             </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+
+            <div className="flex items-center w-full bg-transparent border border-gray-300/60 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M0 .55.571 0H15.43l.57.55v9.9l-.571.55H.57L0 10.45zm1.143 1.138V9.9h13.714V1.69l-6.503 4.8h-.697zM13.749 1.1H2.25L8 5.356z" fill="#6B7280"/>
+                </svg>
+                <input type="email" name='email' placeholder="Email id" className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full" required />                 
             </div>
-          </div>
-        </div>
-        <input type="hidden" name="redirectTo" value={callbackUrl} />
-        <Button className="mt-4 w-full" aria-disabled={isPending}>
-          Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-        </Button>
-        <div
+
+            <div className="flex items-center mt-6 w-full bg-transparent border border-gray-300/60 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                <svg width="13" height="17" viewBox="0 0 13 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 8.5c0-.938-.729-1.7-1.625-1.7h-.812V4.25C10.563 1.907 8.74 0 6.5 0S2.438 1.907 2.438 4.25V6.8h-.813C.729 6.8 0 7.562 0 8.5v6.8c0 .938.729 1.7 1.625 1.7h9.75c.896 0 1.625-.762 1.625-1.7zM4.063 4.25c0-1.406 1.093-2.55 2.437-2.55s2.438 1.144 2.438 2.55V6.8H4.061z" fill="#6B7280"/>
+                </svg>
+                <input type="password" name='password' placeholder="Password" className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full" required />
+            </div>
+
+            <div className="w-full flex items-center justify-between mt-8 text-gray-500/80">
+                <div className="flex items-center gap-2">
+                    <input className="h-5" type="checkbox" id="checkbox" />
+                    <label className="text-sm" htmlFor="checkbox">Remember me</label>
+                </div>
+                <a className="text-sm underline" href="#">Forgot password?</a>
+            </div>
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
+
+            <Button className="mt-4 w-full" aria-disabled={isPending}>
+                Log in
+            </Button>
+            <div
           className="flex h-8 items-end space-x-1"
           aria-live="polite"
           aria-atomic="true"
@@ -83,7 +70,7 @@ export default function LoginForm() {
             </>
           )}
         </div>
-      </div>
-    </form>
-  );
-}
+            <p className="text-gray-500/90 text-sm mt-4">Don’t have an account? <Link className="text-indigo-400 hover:underline" href="/register">Sign up</Link></p>
+        </form>
+    );
+};

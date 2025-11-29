@@ -8,11 +8,15 @@ import { EmailAlreadyExistsError} from "../definitions/errors";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 
+import { redirect } from "next/navigation";
+
 
 export async function registerUser(
+  
   prevState: RegisterState,
   formData: FormData,
 ): Promise<RegisterState> {
+  
   const rawData = {
     email: String(formData.get('email') || ''),
     password: String(formData.get('password') || ''),
@@ -51,6 +55,7 @@ export async function registerUser(
       message: 'Account created successfully!',
       errors: {},
     };
+    
   } catch (err) {
     if (err instanceof EmailAlreadyExistsError) {
       return {
@@ -69,7 +74,10 @@ export async function registerUser(
       },
     };
   }
+  
 }
+
+
 
 
 export async function authenticate(
@@ -91,4 +99,6 @@ export async function authenticate(
     }
     throw error;
   }
+
+  
 }
