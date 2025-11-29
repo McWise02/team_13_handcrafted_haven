@@ -14,10 +14,8 @@ async function deleteProduct(id: string) {
     await prisma.product.delete({
       where: { id },
     });
-    // Optional: revalidatePath('/dashboard/MyProducts') if needed
   } catch (error) {
     console.error("Failed to delete product:", error);
-    // You could throw or return error for better UX later
   }
 }
 
@@ -30,7 +28,8 @@ export default async function MyProductsPage() {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
+  // FIXED: findFirst() avoids invalid unique-field errors
+  const user = await prisma.user.findFirst({
     where: { email: session.user.email! },
     include: {
       products: {
@@ -111,7 +110,6 @@ export default async function MyProductsPage() {
                       Edit
                     </Link>
 
-                    {/* Proper Server Action Form */}
                     <form
                       action={deleteProduct.bind(null, product.id)}
                       className="flex-1"
@@ -120,7 +118,11 @@ export default async function MyProductsPage() {
                         type="submit"
                         className="w-full bg-red-100 hover:bg-red-200 text-red-700 py-2.5 rounded text-sm font-medium transition flex items-center justify-center gap-1"
                         onClick={(e) => {
-                          if (!confirm("Are you sure you want to delete this product? This cannot be undone.")) {
+                          if (
+                            !confirm(
+                              "Are you sure you want to delete this product? This cannot be undone."
+                            )
+                          ) {
                             e.preventDefault();
                           }
                         }}
