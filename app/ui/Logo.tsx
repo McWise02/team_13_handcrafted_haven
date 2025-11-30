@@ -1,4 +1,4 @@
-// app/ui/MarketLogo.tsx  (or Logo.tsx)
+
 import { Package, ShoppingBag } from "lucide-react";
 
 export default function MarketLogo() {
