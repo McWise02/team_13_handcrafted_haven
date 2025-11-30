@@ -41,7 +41,7 @@ export default async function ProductsPage() {
             {products.map((product) => (
               <Link
                 key={product.id}
-                href={`/products/${product.id}`}
+                href={`/dashboard/MyProductsList/${product.id}`}
                 className="group block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden"
               >
                 <div className="aspect-square relative bg-amber-50">

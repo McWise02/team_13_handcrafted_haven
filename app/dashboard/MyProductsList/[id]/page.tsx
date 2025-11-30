@@ -1,86 +1,154 @@
-// app/products/page.tsx
+// app/dashboard/MyProductsList/[id]/page.tsx
 import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag, Clock, User } from "lucide-react";
+import { ArrowLeft, User, Clock, ShoppingBag } from "lucide-react";
 
 export const revalidate = 60;
-export const metadata = { title: "Handcrafted Haven – Marketplace" };
 
-export default async function ProductsPage() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
+// This is the only correct way in Next.js 16 + Turbopack
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;  // params is a Promise!
+}) {
+  // You MUST await params first
+  const { id } = await params;
+
+  const product = await prisma.product.findUnique({
+    where: { id },
     include: {
-      user: { select: { firstName: true, lastName: true, email: true } },
+      user: {
+        select: { firstName: true, lastName: true, email: true },
+      },
     },
   });
 
+  if (!product) {
+    return notFound();
+  }
+
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
-  const getSellerName = (user: any) =>
-    user ? `${user.firstName} ${user.lastName}`.trim() || user.email.split("@")[0] : "Artisan";
+
+  const sellerName =
+    product.user
+      ? `${product.user.firstName || ""} ${product.user.lastName || ""}`.trim() ||
+        product.user.email.split("@")[0]
+      : "Artisan";
+
+  const otherImages = product.images.slice(1);
 
   return (
     <div className="min-h-screen bg-amber-50 py-12">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold text-amber-900 mb-4">
-            Handcrafted Haven
-          </h1>
-          <p className="text-xl text-amber-700">
-            {products.length} handmade {products.length === 1 ? "item" : "items"} available
-          </p>
-        </div>
+        {/* Back Button */}
+        <Link
+          href="/dashboard/MyProductsList"
+          className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 mb-8 font-medium transition"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          Back to My Products
+        </Link>
 
-        {products.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-3xl shadow-xl">
-            <ShoppingBag className="h-24 w-24 text-amber-200 mx-auto mb-6" />
-            <p className="text-2xl text-gray-700">No items yet. Check back soon!</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map((product) => (
-              <Link
-                key={product.id}
-                href={`/products/${product.id}`}
-                className="group block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden"
-              >
-                <div className="aspect-square relative bg-amber-50">
-                  {product.images[0] ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-3xl shadow-xl overflow-hidden">
+          {/* Main Image */}
+          <div className="relative">
+            <div className="aspect-square relative bg-amber-50">
+              {product.images[0] ? (
+                <Image
+                  src={product.images[0]}
+                  alt={product.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full bg-amber-100">
+                  <div className="bg-amber-200 border-2 border-dashed border-amber-400 rounded-xl w-48 h-48" />
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnails */}
+            {otherImages.length > 0 && (
+              <div className="grid grid-cols-4 gap-4 p-6 bg-gray-50">
+                {otherImages.map((img, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square relative rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition"
+                  >
                     <Image
-                      src={product.images[0]}
-                      alt={product.title}
+                      src={img}
+                      alt={`${product.title} - view ${i + 2}`}
                       fill
-                      sizes="25vw"
-                      className="object-cover group-hover:scale-105 transition"
+                      sizes="10vw"
+                      className="object-cover"
                     />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="bg-amber-100 border-2 border-dashed border-amber-300 rounded-xl w-32 h-32" />
-                    </div>
-                  )}
-                  <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-2 rounded-full font-bold text-lg shadow-lg">
-                    {formatPrice(product.price)}
                   </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-amber-700">
-                    {product.title}
-                  </h3>
-                  <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      <span>{getSellerName(product.user)}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{new Date(product.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                ))}
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Product Info */}
+          <div className="flex flex-col justify-between p-8 lg:p-12">
+            <div>
+              <h1 className="text-4xl font-bold text-amber-900 mb-6">
+                {product.title}
+              </h1>
+
+              <div className="text-5xl font-bold text-amber-600 mb-8">
+                {formatPrice(product.price)}
+              </div>
+
+              {product.description && (
+                <div className="prose prose-amber max-w-none mb-10 text-gray-700">
+                  <p className="whitespace-pre-wrap text-lg leading-relaxed">
+                    {product.description}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-6 text-gray-600">
+                <div className="flex items-center gap-3">
+                  <User className="h-6 w-6 text-amber-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Handmade by</p>
+                    <p className="font-semibold text-lg text-gray-800">
+                      {sellerName}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-amber-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Listed on</p>
+                    <p className="font-medium">
+                      {new Date(product.createdAt).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12">
+              <button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xl py-6 rounded-2xl transition flex items-center justify-center gap-3 shadow-lg">
+                <ShoppingBag className="h-7 w-7" />
+                Contact Seller to Purchase
+              </button>
+              <p className="text-center text-sm text-gray-500 mt-4">
+                This is a peer-to-peer marketplace. You'll be connected with the artisan directly.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
