@@ -5,6 +5,12 @@ import { authenticate } from '@/lib/actions/auth';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/app/ui/button';
 import Link from 'next/link';
+import {
+  AtSymbolIcon,
+  KeyIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/outline';
+
 
 export default function LoginForm() {
     const searchParams = useSearchParams();
@@ -47,10 +53,23 @@ export default function LoginForm() {
                 </div>
                 <a className="text-sm underline" href="#">Forgot password?</a>
             </div>
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
 
             <Button className="mt-4 w-full" aria-disabled={isPending}>
                 Log in
             </Button>
+            <div
+          className="flex h-8 items-end space-x-1"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {errorMessage && (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
+        </div>
             <p className="text-gray-500/90 text-sm mt-4">Don’t have an account? <Link className="text-indigo-400 hover:underline" href="/register">Sign up</Link></p>
         </form>
     );

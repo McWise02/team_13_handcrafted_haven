@@ -1,76 +1,51 @@
+import AcmeLogo from '@/app/ui/acme-logo';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { lusitana } from '@/app/ui/fonts';
+import Image from 'next/image';
 
-import Link from "next/link";
-import Image from "next/image";
-
-export default function Home() {
+export default function Page() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
-      {/* Hero */}
-      <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 py-24 text-center">
-          <div className="mb-8 inline-block rounded-full bg-amber-200 px-6 py-3 text-amber-900 font-semibold">
-            Welcome to Handcrafted Haven
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-            Discover Unique<br />
-            <span className="text-amber-600">Handmade Treasures</span>
-          </h1>
-
-          <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
-            Buy directly from real artisans. Every piece has a story.
+    <main className="flex min-h-screen flex-col p-6">
+      <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52">
+        <AcmeLogo />
+        {/* <AcmeLogo /> */}
+      </div>
+      <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
+        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
+          <div className="relative w-0 h-0 border-l-15 border-r-15 border-b-26 border-l-transparent border-r-transparent border-b-black" />
+          <p className={`${lusitana.className} text-xl text-gray-800 md:text-3xl md:leading-normal`}>
+            <strong>Welcome to HCHD.</strong> This is the market place for the{' '}
+            <a href="https://nextjs.org/learn/" className="text-blue-500">
+              Handy craft heaven Customer Help Desk
+            </a>
+            , brought to you by HCHD Corp.
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link
-              href="/dashboard"
-              className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-lg px-10 py-5 rounded-full transition shadow-lg"
-            >
-              Start Selling →
-            </Link>
-            <Link
-              href="/browse"
-              className="bg-white hover:bg-gray-100 text-amber-700 font-bold text-lg px-10 py-5 rounded-full border-2 border-amber-600 transition shadow-lg"
-            >
-              Explore Marketplace
-            </Link>
-          </div>
+          <Link
+            href="/login"
+            className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
+          >
+            <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6" />
+          </Link>
+        </div>
+        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
+          {/* Add Hero Images Here */}
+           <Image
+              src="/hero-desktop.png"
+              width={1000}
+              height={760}
+              className="hidden md:block"
+              alt="Screenshots of the dashboard project showing desktop version"
+            />
+             <Image
+                src="/hero-mobile.png"
+                width={560}
+                height={620}
+                className="block md:hidden"
+                alt="Screenshot of the dashboard project showing mobile version"
+              />
         </div>
       </div>
-
-      {/* Simple categories */}
-      <div className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-12">Shop by Craft</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {["Woodwork", "Jewelry", "Textiles", "Ceramics"].map((cat) => (
-              <div
-                key={cat}
-                className="group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition"
-              >
-                <div className="aspect-square bg-gray-200 border-2 border-dashed rounded-xl relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 font-bold text-2xl">
-                    {cat}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Final CTA */}
-      <div className="py-20 bg-amber-600 text-white text-center">
-        <h2 className="text-4xl font-bold mb-6">
-          Ready to find something truly special?
-        </h2>
-        <Link
-          href="/dashboard"
-          className="inline-block bg-white text-amber-600 hover:bg-gray-100 font-bold text-xl px-12 py-6 rounded-full transition"
-        >
-          Start Shopping Now
-        </Link>
-      </div>
-    </div>
+    </main>
   );
 }
