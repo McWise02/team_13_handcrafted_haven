@@ -5,32 +5,48 @@ import Link from "next/link";
 import { Trash2, Edit, Plus } from "lucide-react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
-// Extracted Server Action (best practice)
+// Server Action — safe and secure
 async function deleteProduct(id: string) {
   "use server";
 
-  try {
-    await prisma.product.delete({
-      where: { id },
-    });
-  } catch (error) {
-    console.error("Failed to delete product:", error);
+  const session = await auth();
+  if (!session?.user?.email) return;
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!user) return;
+
+  // Security: only allow deleting own products
+  const product = await prisma.product.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+
+  if (!product || product.userId !== user.id) {
+    console.error("Unauthorized delete attempt");
+    return;
   }
+
+  await prisma.product.delete({ where: { id } });
+
+  // Optional: refresh the page data
+  revalidatePath("/dashboard/MyProducts");
 }
 
 export const revalidate = 0;
 
 export default async function MyProductsPage() {
   const session = await auth();
-
   if (!session?.user?.email) {
     redirect("/login");
   }
 
-  // FIXED: findFirst() avoids invalid unique-field errors
   const user = await prisma.user.findFirst({
-    where: { email: session.user.email! },
+    where: { email: session.user.email },
     include: {
       products: {
         orderBy: { createdAt: "desc" },
@@ -98,34 +114,23 @@ export default async function MyProductsPage() {
                     {product.title}
                   </h3>
                   <p className="text-2xl font-bold text-amber-600 mb-6">
-                    ${Number(product.price).toFixed(2)}
+                    ${(product.price / 100).toFixed(2)}
                   </p>
 
                   <div className="flex gap-3">
                     <Link
                       href={`/dashboard/MyProducts/edit/${product.id}`}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 py-2.5 rounded text-center text-sm font-medium transition"
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 py-2.5 rounded text-center text-sm font-medium transition flex items-center justify-center gap-1"
                     >
-                      <Edit className="h-4 w-4 inline mr-1" />
+                      <Edit className="h-4 w-4" />
                       Edit
                     </Link>
 
-                    <form
-                      action={deleteProduct.bind(null, product.id)}
-                      className="flex-1"
-                    >
+                    {/* SAFE DELETE — NO onClick, NO onSubmit, NO event handlers */}
+                    <form action={deleteProduct.bind(null, product.id)} className="flex-1">
                       <button
                         type="submit"
                         className="w-full bg-red-100 hover:bg-red-200 text-red-700 py-2.5 rounded text-sm font-medium transition flex items-center justify-center gap-1"
-                        onClick={(e) => {
-                          if (
-                            !confirm(
-                              "Are you sure you want to delete this product? This cannot be undone."
-                            )
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                         Delete
