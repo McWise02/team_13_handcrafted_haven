@@ -48,7 +48,7 @@ export default function LoginForm() {
                 <a className="text-sm underline" href="#">Forgot password?</a>
             </div>
 
-            <Button className="mt-4 w-full" aria-disabled={isPending}>
+            <Button className="mt-4 w-full bg-green-accent" aria-disabled={isPending}>
                 Log in
             </Button>
             <p className="text-gray-500/90 text-sm mt-4">Don’t have an account? <Link className="text-indigo-400 hover:underline" href="/register">Sign up</Link></p>
