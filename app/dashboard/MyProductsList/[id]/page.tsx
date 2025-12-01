@@ -11,7 +11,7 @@ export const revalidate = 60;
 export default async function ProductDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;  // params is a Promise!
+  params: { id: string };  // params is a Promise!
 }) {
   // You MUST await params first
   const { id } = await params;
