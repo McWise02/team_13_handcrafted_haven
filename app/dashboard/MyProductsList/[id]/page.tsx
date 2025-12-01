@@ -8,10 +8,8 @@ import { ArrowLeft, User, Clock, ShoppingBag } from "lucide-react";
 export const revalidate = 60;
 
 // This is the only correct way in Next.js 16 + Turbopack
-export default async function ProductDetailPage({
-  params,
-}: {
-  params: { id: string };  // params is a Promise!
+export default async function ProductDetailPage({ params }: {
+  params: { id: string };
 }) {
   // You MUST await params first
   const { id } = await params;
