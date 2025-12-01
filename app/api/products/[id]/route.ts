@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-// Works on every Zod version (3.18 → 3.23+)
+// Works perfectly on all Zod versions (including yours)
 const updateProductSchema = z.object({
   title: z.string().min(1, "Title is required").max(200).trim(),
   price: z.number().int().positive("Price must be a positive number (in cents)"),
@@ -20,7 +20,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params; // Required in Next.js 14+
+  const { id } = await params; // Next.js 14+ requirement
 
   // ───── Authentication ─────
   const session = await auth();
@@ -82,7 +82,7 @@ export async function PUT(
       data: {
         title,
         price,
-        description, // required in your current Prisma schema
+        description,
         images,
         category,
       },
