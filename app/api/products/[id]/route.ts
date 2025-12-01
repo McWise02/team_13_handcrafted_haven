@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-// Safe Zod schema – works on all versions
+// 100% safe Zod schema — works on every version
 const updateProductSchema = z.object({
   title: z.string().min(1, "Title is required").max(200).trim(),
   price: z.number().int().positive("Price must be a positive number (in cents)"),
@@ -21,7 +21,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params; // Required in Next.js 14+
+  const { id } = await params; // Next.js 14+ requires awaiting params
 
   // ───── Authentication ─────
   const session = await auth();
@@ -83,7 +83,7 @@ export async function PUT(
       data: {
         title,
         price,
-        description,
+        description, // required in DB → always non-empty string
         images,
         category,
       },
