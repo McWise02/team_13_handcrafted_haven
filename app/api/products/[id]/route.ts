@@ -5,22 +5,23 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-// Works perfectly on all Zod versions (including yours)
+// Safe Zod schema – works on all versions
 const updateProductSchema = z.object({
   title: z.string().min(1, "Title is required").max(200).trim(),
   price: z.number().int().positive("Price must be a positive number (in cents)"),
   description: z.string().min(1, "Description is required").trim(),
-  images: z.array(z.string().url("Each image must be a valid URL")).default([]),
-  category: z.enum(["METALWORK", "TEXTILE", "WOODWORK"], {
-    message: "Category is required and must be one of: METALWORK, TEXTILE, WOODWORK",
-  }),
+  images: z.array(z.string().url("Invalid image URL")).default([]),
+  category: z.enum(["METALWORK", "TEXTILE", "WOODWORK"]).refine(
+    (val) => val != null,
+    { message: "Category is required" }
+  ),
 });
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params; // Next.js 14+ requirement
+  const { id } = await params; // Required in Next.js 14+
 
   // ───── Authentication ─────
   const session = await auth();
