@@ -1,53 +1,87 @@
 // app/api/products/[id]/route.ts
+
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { z } from "zod";
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+// Validation schema – description is required in your DB
+const updateProductSchema = z.object({
+  title: z.string().min(1).max(200).trim(),
+  price: z.number().int().positive(),
+  description: z.string().trim().min(1, "Description is required"), // required
+  images: z.array(z.string().url()).default([]),
+  category: z.enum(["METALWORK", "TEXTILE", "WOODWORK"]),
+});
+
+type Params = Promise<{ id: string }>;
+
+export async function PUT(request: NextRequest, { params }: { params: Params }) {
+  const { id } = await params;
+
+  // ───── Auth ─────
   const session = await auth();
   if (!session?.user?.email) {
-    return new Response("Unauthorized", { status: 401 });
+    return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
+  const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
+    select: { id: true },
   });
 
-  if (!user) {
-    return new Response("Unauthorized", { status: 401 });
+  if (!currentUser) {
+    return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  // Check if product exists and belongs to user
-  const existingProduct = await prisma.product.findUnique({
-    where: { id: params.id },
+  // ───── Ownership ─────
+  const product = await prisma.product.findUnique({
+    where: { id },
     select: { userId: true },
   });
 
-  if (!existingProduct) {
-    return new Response("Product not found", { status: 404 });
+  if (!product) {
+    return new NextResponse("Product not found", { status: 404 });
   }
 
-  if (existingProduct.userId !== user.id) {
-    return new Response("Forbidden: You can only edit your own products", { status: 403 });
+  if (product.userId !== currentUser.id) {
+    return new NextResponse("Forbidden", { status: 403 });
   }
 
+  // ───── Parse & validate body ─────
+  let body;
   try {
-    const { title, price, description, images, category } = await req.json();
+    body = await request.json();
+  } catch {
+    return new NextResponse("Invalid JSON", { status: 400 });
+  }
 
+  const result = updateProductSchema.safeParse(body);
+  if (!result.success) {
+    return NextResponse.json(
+      { error: "Invalid data", details: result.error.format() },
+      { status: 400 }
+    );
+  }
+
+  const { title, price, description, images, category } = result.data;
+
+  // ───── Update (description is required → always string) ─────
+  try {
     const updatedProduct = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
-        title: title.trim(),
-        price, // already in cents (int)
-        description: description?.trim() || null,
-        images: images ?? [], // always array
+        title,
+        price,
+        description,        // ← now guaranteed to be non-empty string
+        images,
         category,
       },
     });
 
     return NextResponse.json(updatedProduct);
   } catch (error) {
-    console.error("Failed to update product:", error);
-    return new Response("Invalid data or server error", { status: 400 });
+    console.error("Product update failed:", error);
+    return new NextResponse("Failed to update product", { status: 500 });
   }
 }
