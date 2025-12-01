@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import NavLinks from '@/app/ui/dashboard/nav-links';
-import AcmeLogo from '@/app/ui/acme-logo';
+import MarketLogo from '@/app/ui/Logo';
 
 
 export default function SideNav() {
@@ -11,7 +11,7 @@ export default function SideNav() {
         href="/"
       >
         <div className="w-32 text-white md:w-40">
-          <AcmeLogo />
+          <MarketLogo />
         </div>
       </Link>
 
