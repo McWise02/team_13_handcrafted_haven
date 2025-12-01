@@ -5,14 +5,12 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-// This works on ALL versions of Zod (3.18 → 3.23+)
+// Works on every Zod version (3.18 → 3.23+)
 const updateProductSchema = z.object({
   title: z.string().min(1, "Title is required").max(200).trim(),
   price: z.number().int().positive("Price must be a positive number (in cents)"),
   description: z.string().min(1, "Description is required").trim(),
   images: z.array(z.string().url("Each image must be a valid URL")).default([]),
-
-  // Simple, bullet-proof enum that works everywhere
   category: z.enum(["METALWORK", "TEXTILE", "WOODWORK"], {
     message: "Category is required and must be one of: METALWORK, TEXTILE, WOODWORK",
   }),
@@ -22,7 +20,7 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id } = await params; // Required in Next.js 14+
 
   // ───── Authentication ─────
   const session = await auth();
@@ -50,7 +48,9 @@ export async function PUT(
   }
 
   if (product.userId !== currentUser.id) {
-    return new NextResponse("Forbidden", { status: 403 });
+    return new NextResponse("Forbidden: You can only edit your own products", {
+      status: 403,
+    });
   }
 
   // ───── Parse & validate body ─────
@@ -82,7 +82,7 @@ export async function PUT(
       data: {
         title,
         price,
-        description, // required field → always string
+        description, // required in your current Prisma schema
         images,
         category,
       },
