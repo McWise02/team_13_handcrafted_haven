@@ -1,83 +1,119 @@
-// app/browse/product/view/[id]/page.tsx
-
 import { getProductForViewing } from "@/lib/data/products";
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import { ShoppingBag, User, Clock } from "lucide-react";
+import { redirect } from "next/navigation";
+import ImageCarousel from "@/app/ui/images/ImageCarousel";
+import ReviewsCarousel from "@/app/ui/reviews/ReviewCarousel";
+import OtherUserProductsCarousel from "@/app/ui/products/OtherUserProductsCarousel";
+import CreateReviewForm from "@/app/ui/reviews/CreateReviewForm";
+import { createReview } from "@/lib/actions/reviews";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
 
-export default async function ProductViewPage({ params }: Props) {
-  const { id } = await params;
-  const product = await getProductForViewing(id);
+type ViewProductPageParams = {
+    id: string;
+}
 
-  if (!product) {
-    notFound();
-  }
 
-  const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
-  const sellerName = product.user
-    ? `${product.user.firstName} ${product.user.lastName}`.trim() || product.user.email.split("@")[0]
-    : "Artisan";
+export default async function ViewProductPage({params} : {params: ViewProductPageParams}) {
+    const param = await params;
+    const productId = param.id;
+    const product = await getProductForViewing(productId);
+    if (!product) {
+        redirect("/browse");
+    }
 
-  return (
-    <div className="min-h-screen bg-amber-50 py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Images */}
-          <div className="space-y-4">
-            {product.images[0] ? (
-              <div className="aspect-square relative rounded-2xl overflow-hidden shadow-xl">
-                <Image
-                  src={product.images[0]}
-                  alt={product.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ) : (
-              <div className="aspect-square bg-amber-100 border-2 border-dashed border-amber-300 rounded-2xl" />
-            )}
-          </div>
+    const other_user_products = product.user.products;
 
-          {/* Details */}
-          <div className="space-y-8">
-            <div>
-              <h1 className="text-4xl font-bold text-amber-900">{product.title}</h1>
-              <p className="text-3xl font-bold text-amber-600 mt-4">
-                {formatPrice(product.price)}
-              </p>
-            </div>
+return (
+  <div className="min-h-screen bg-slate-100">
+    <div className="mx-auto max-w-6xl px-4 py-8 lg:py-10">
+      {/* Header / Title */}
+      <header className="mb-6 flex flex-col gap-2 border-b border-slate-200 pb-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+            Product
+          </p>
+          <h1 className="mt-1 text-2xl font-semibold text-slate-900">
+            {product.title}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Created by{" "}
+            <span className="font-medium text-slate-800">
+              {product.user.firstName} {product.user.lastName}
+            </span>
+          </p>
+        </div>
 
-            <div className="prose prose-amber max-w-none">
-              <p className="text-gray-700 whitespace-pre-wrap">{product.description}</p>
-            </div>
-
-            <div className="flex items-center gap-6 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                <span>{sellerName}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                <span>
-                  {new Date(product.createdAt).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-            </div>
-
-            <button className="w-full bg-amber-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-amber-700 transition">
-              Add to Cart
-            </button>
+        <div className="mt-3 flex items-end gap-4 md:mt-0">
+          <div className="text-right">
+            <p className="text-xs uppercase tracking-wide text-slate-400">
+              Price
+            </p>
+            <p className="text-2xl font-semibold text-blue-600">
+              {product.price} €
+            </p>
           </div>
         </div>
+      </header>
+
+      {/* Main content */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        {/* Left column: Images + Description */}
+        <section className="space-y-6">
+          {/* Image card */}
+          <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+            <ImageCarousel images={product.images} />
+          </div>
+
+          {/* Description card */}
+          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <h2 className="mb-2 text-lg font-semibold text-slate-900">
+              Description
+            </h2>
+            <p className="text-sm leading-relaxed text-slate-700">
+              {product.description}
+            </p>
+          </div>
+
+          {/* Other products from this user */}
+          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <OtherUserProductsCarousel products={other_user_products} />
+          </div>
+        </section>
+
+        {/* Right column: Reviews + Create review */}
+        <aside className="space-y-6">
+          {/* Reviews */}
+          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Reviews
+              </h2>
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                {product.reviews.length} review
+                {product.reviews.length === 1 ? "" : "s"}
+              </span>
+            </div>
+
+            <ReviewsCarousel reviews={product.reviews} />
+          </div>
+
+          {/* Write a review */}
+          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            <h3 className="mb-3 text-sm font-semibold text-slate-900">
+              Leave a review
+            </h3>
+            <p className="mb-3 text-xs text-slate-500">
+              Share your experience with this product. Your feedback helps
+              others in the community.
+            </p>
+
+            <CreateReviewForm
+              action={createReview}
+              productId={productId}
+            />
+          </div>
+        </aside>
       </div>
     </div>
-  );
+  </div>
+);
 }
