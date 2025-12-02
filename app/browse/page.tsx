@@ -23,14 +23,14 @@ export default async function CustomerBrowsePage(props: BrowsePageProps) {
   const totalPages = await getTotalBrowsePages(query);
 
   return (
-    <div className="min-h-screen bg-amber-50 py-12">
+    <div className="min-h-screen bg-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold text-amber-900 mb-4">
+          <h1 className="text-5xl md:text-6xl font-bold text-blue-900 mb-4">
             Handcrafted Haven
           </h1>
-          <p className="text-xl text-amber-700">
+          <p className="text-xl text-blue-700">
             Discover unique handmade treasures
           </p>
         </div>
@@ -67,13 +67,14 @@ async function ProductGrid({
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
   const getSellerName = (user: any) =>
     user
-      ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || user.email.split("@")[0]
+      ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
+        user.email.split("@")[0]
       : "Artisan";
 
   if (products.length === 0) {
     return (
       <div className="text-center py-24 bg-white rounded-3xl shadow-xl">
-        <ShoppingBag className="h-24 w-24 text-amber-200 mx-auto mb-6" />
+        <ShoppingBag className="h-24 w-24 text-blue-200 mx-auto mb-6" />
         <p className="text-2xl text-gray-700">
           {query
             ? `No results found for "${query}"`
@@ -92,7 +93,7 @@ async function ProductGrid({
           href={`/browse/product/view/${product.id}`}
           className="group block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden"
         >
-          <div className="aspect-square relative bg-amber-50">
+          <div className="aspect-square relative bg-blue-50">
             {product.images[0] ? (
               <Image
                 src={product.images[0]}
@@ -103,16 +104,16 @@ async function ProductGrid({
               />
             ) : (
               <div className="flex items-center justify-center h-full">
-                <div className="bg-amber-100 border-2 border-dashed border-amber-300 rounded-xl w-32 h-32" />
+                <div className="bg-blue-100 border-2 border-dashed border-blue-300 rounded-xl w-32 h-32" />
               </div>
             )}
-            <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-2 rounded-full font-bold text-lg shadow-lg">
+            <div className="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full font-bold text-lg shadow-lg">
               {formatPrice(product.price)}
             </div>
           </div>
 
           <div className="p-6">
-            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-amber-700">
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-blue-700">
               {product.title}
             </h3>
             <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
