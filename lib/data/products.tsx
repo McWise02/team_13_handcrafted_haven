@@ -71,6 +71,12 @@ export async function getProductForViewing(id: string) {
           firstName: true,
           lastName: true,
           email: true,
+          // Add this if you want to show seller's other products
+          products: {
+            where: { id: { not: id } }, // exclude current product
+            take: 4,
+            orderBy: { createdAt: "desc" },
+          },
         },
       },
       reviews: {

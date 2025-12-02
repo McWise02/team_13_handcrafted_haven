@@ -89,7 +89,7 @@ async function ProductGrid({
         // Public product detail page
         <Link
           key={product.id}
-          href={`/products/${product.id}`}
+          href={`/browse/product/view/${product.id}`}
           className="group block bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden"
         >
           <div className="aspect-square relative bg-amber-50">
