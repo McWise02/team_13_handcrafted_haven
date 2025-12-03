@@ -23,11 +23,7 @@ const links = [
   { name: 'DashboardOverview', href: '/dashboard/DashboardOverview', icon: HomeIcon },
   { name: 'Home', href: '/dashboard', icon: HomeIcon },
   { name: 'MyProducts', href: '/dashboard/MyProducts', icon: ShoppingBagIcon },
-  {
-    name: 'MyProductsList',
-    href: '/dashboard/MyProductsList',
-    icon: DocumentDuplicateIcon,
-  },
+ 
   { name: 'SellerDashboard', href: '/dashboard/SellerDashboard', icon: UserGroupIcon },
   { name: 'SellerOrderStatusChart', href: '/dashboard/SellerOrderStatusChart', icon: ChartBarIcon },
   { name: 'SellerSalesChart', href: '/dashboard/SellerSalesChart', icon: BanknotesIcon },
