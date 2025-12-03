@@ -142,7 +142,7 @@ export default async function ProductDetailPage({ params }: {
                 Contact Seller to Purchase
               </button>
               <p className="text-center text-sm text-gray-500 mt-4">
-                This is a peer-to-peer marketplace. You'll be connected with the artisan directly.
+                This is a peer-to-peer marketplace. You&apos;ll be connected with the artisan directly.
               </p>
             </div>
           </div>

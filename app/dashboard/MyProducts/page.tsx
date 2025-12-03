@@ -95,13 +95,18 @@ export default async function MyProductsPage() {
               >
                 <div className="aspect-square relative bg-gray-100">
                   {product.images?.[0] ? (
-                    <Image
+                    <img
                       src={product.images[0]}
                       alt={product.title}
-                      fill
+                      style={{ objectFit: "cover" }}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       className="object-cover"
+                      width ={500}
+                      height={500}
                     />
+                    
+
+
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                       No image
