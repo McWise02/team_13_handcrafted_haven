@@ -10,6 +10,7 @@ const updateProductSchema = z.object({
   title: z.string().min(1, "Title is required").max(200).trim(),
   price: z.number().int().positive("Price must be greater than 0"),
   description: z.string().min(1, "Description is required").trim(),
+  craftStory: z.string().optional(),
   images: z.array(z.string().url("Invalid image URL")).default([]),
 
   // This syntax is universally supported — no more TS 2769
@@ -69,7 +70,7 @@ export async function PUT(
     );
   }
 
-  const { title, price, description, images, category } = parsed.data;
+  const { title, price, description, craftStory, images, category } = parsed.data;
 
   // ───── Update ─────
   try {
@@ -79,6 +80,7 @@ export async function PUT(
         title,
         price,
         description, // required in your DB → always string
+        craftStory: craftStory || null,
         images,
         category,
       },
