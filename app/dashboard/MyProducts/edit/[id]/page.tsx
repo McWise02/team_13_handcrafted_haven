@@ -41,6 +41,7 @@ export default async function EditProductPage({
       id: true,
       title: true,
       description: true,
+      craftStory: true,
       price: true,
       category: true,
       images: true,
