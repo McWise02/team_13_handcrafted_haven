@@ -5,6 +5,7 @@ import ReviewsCarousel from "@/app/ui/reviews/ReviewCarousel";
 import OtherUserProductsCarousel from "@/app/ui/products/OtherUserProductsCarousel";
 import CreateReviewForm from "@/app/ui/reviews/CreateReviewForm";
 import { createReview } from "@/lib/actions/reviews";
+import { getCurrentUser } from "@/lib/get-current-user";
 
 type ViewProductPageParams = {
   id: string;
@@ -18,6 +19,7 @@ export default async function ViewProductPage({
   const param = await params;
   const productId = param.id;
   const product = await getProductForViewing(productId);
+  const user = await getCurrentUser()
 
   if (!product) {
     redirect("/browse");
@@ -51,7 +53,7 @@ export default async function ViewProductPage({
                 Price
               </p>
               <p className="text-2xl font-semibold text-blue-600">
-                {product.price} €
+                {product.price / 100} €
               </p>
             </div>
           </div>
@@ -144,7 +146,7 @@ export default async function ViewProductPage({
                 others in the community.
               </p>
 
-              <CreateReviewForm action={createReview} productId={productId} />
+              <CreateReviewForm action={createReview} productId={productId}  user={user} />
             </div>
           </aside>
         </div>

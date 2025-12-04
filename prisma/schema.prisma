@@ -52,12 +52,19 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   reviews Review[]
+  
 }
 
 model Review {
   id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+
+  // Nullable relation to User
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  // For guest reviews
+  firstName String?
+  email     String?
 
   productId String
   product   Product  @relation(fields: [productId], references: [id])
@@ -69,3 +76,4 @@ model Review {
 
   @@index([productId])
 }
+

@@ -1,15 +1,56 @@
 "use client";
 
+import { User } from "next-auth";
+import { useState } from "react";
+
+interface CurrentUser {
+  email: string;
+  id: string;
+  role: string;
+}
+
 type FormParams = {
   action: (formData: FormData) => void; // server action
   productId: string;
+  user: User | null;
 };
 
-export default function CreateReviewForm({ action, productId }: FormParams) {
+export default function CreateReviewForm({ action, productId, user }: FormParams) {
   return (
     <form action={action} className="space-y-3">
-      {/* pass productId to the server via hidden input */}
+      {/* Pass productId to server */}
       <input type="hidden" name="productId" value={productId} />
+
+      {/* Only show these fields if user is logged in */}
+      {!user && (
+        <>
+          <div>
+            <label className="block text-sm font-medium mb-1" htmlFor="firstName">
+              First Name
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              required
+              className="w-full rounded border px-2 py-1 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1" htmlFor="email">
+              Email to Contact
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              className="w-full rounded border px-2 py-1 text-sm"
+            />
+          </div>
+        </>
+      )}
 
       <div>
         <label className="mb-1 block text-sm font-medium" htmlFor="rating">
