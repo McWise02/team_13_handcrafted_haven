@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, Clock, User } from "lucide-react";
 import Pagination from "../ui/products/Pagination";
+import { Suspense } from "react";
 
 export const revalidate = 60;
 export const metadata = { title: "Handcrafted Haven – Marketplace" };
@@ -11,8 +12,8 @@ export const metadata = { title: "Handcrafted Haven – Marketplace" };
 const PAGE_SIZE = 8;
 
 export default async function ProductsPage({ searchParams }: { searchParams?: { page?: string } }) {
-
-  const currentPage = Number(searchParams?.page || "1") || 1;
+  const params = await searchParams;
+  const currentPage = Number(params?.page || "1") || 1;
   const totalItems = await prisma.product.count();
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
   
@@ -92,10 +93,10 @@ export default async function ProductsPage({ searchParams }: { searchParams?: { 
               ))}
             </div>
 
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-            />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+              />
           </>
         )}
       </div>

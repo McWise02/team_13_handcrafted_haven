@@ -36,6 +36,7 @@ model User {
   // Relations
   products Product[]
   reviews  Review[]
+  phoneNumber String @default(111-1111-1111)
 }
 
 model Product {
