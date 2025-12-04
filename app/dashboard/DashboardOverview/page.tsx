@@ -16,37 +16,23 @@ import {
 export const revalidate = 60;
 
 export default async function DashboardOverview() {
-  let totalProducts;
-  let totalUsers;
-  let recentProducts;
-  let topSellers;
+  const [totalProducts, totalUsers, recentProducts, topSellers] = await Promise.all([
+    prisma.product.count(),
+    prisma.user.count(),
+    prisma.product.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { firstName: true, lastName: true } },
+      },
+    }),
+    prisma.user.findMany({
+      take: 5,
+      orderBy: { products: { _count: "desc" } },
+      include: { _count: { select: { products: true } } },
+    }),
+  ]);
 
-  try {
-    [totalProducts, totalUsers, recentProducts, topSellers] = await Promise.all([
-      prisma.product.count(),
-      prisma.user.count(),
-      prisma.product.findMany({
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: {
-          user: { select: { firstName: true, lastName: true } },
-        },
-      }),
-      prisma.user.findMany({
-        take: 5,
-        orderBy: { products: { _count: "desc" } },
-        include: { _count: { select: { products: true } } },
-      }),
-    ]);
-  } catch (e: any) {
-    console.error(
-      "DashboardOverview Prisma error:",
-      e.code,
-      e.message,
-      e.meta
-    );
-    throw e; // rethrow so Next still shows the error page
-  }
   // Safe defaults until you add the Order model later
   const totalOrders = 0;
   const totalRevenue = 0.0;
