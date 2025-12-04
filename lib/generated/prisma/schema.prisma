@@ -44,7 +44,8 @@ model Product {
   userId      String
   user        User            @relation(fields: [userId], references: [id])
   category    ProductCategory
-  description String
+  description String?
+  craftStory  String? // ← add this
   price       Int
   images      String[]
 

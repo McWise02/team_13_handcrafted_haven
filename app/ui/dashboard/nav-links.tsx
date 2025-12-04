@@ -24,19 +24,8 @@ const links = [
   { name: 'Home', href: '/dashboard', icon: HomeIcon },
   { name: 'MyProducts', href: '/dashboard/MyProducts', icon: ShoppingBagIcon },
  
-  { name: 'SellerDashboard', href: '/dashboard/SellerDashboard', icon: UserGroupIcon },
-  { name: 'SellerOrderStatusChart', href: '/dashboard/SellerOrderStatusChart', icon: ChartBarIcon },
-  { name: 'SellerSalesChart', href: '/dashboard/SellerSalesChart', icon: BanknotesIcon },
-  { name: 'SellerTopProducts', href: '/dashboard/SellerTopProducts', icon: UserGroupIcon },
-  { name: 'Orders', href: '/dashboard/Orders', icon: UserGroupIcon },
-  { name: 'LiveOrders', href: '/dashboard/LiveOrders', icon: UserGroupIcon },
-  { name: 'Reviews & Ratings', href: '/dashboard/Reviews&Ratings', icon: UserGroupIcon },
-  { name: 'Earnings', href: '/dashboard/Earnings', icon: UserGroupIcon },
+  
   { name: 'Messages', href: '/dashboard/Messages', icon: UserGroupIcon },
-  { name: 'Craft Stories', href: '/dashboard/CraftStories', icon: UserGroupIcon },
-  { name: 'Shop Analytics', href: '/dashboard/ShopAnalytics', icon: UserGroupIcon },
-  { name: 'Profile Settings', href: '/dashboard/ProfileSettings', icon: UserGroupIcon },
-  { name: 'Account Settings', href: '/dashboard/AccountSettings', icon: UserGroupIcon },
   { name: 'Help & Support', href: '/dashboard/Help&Support', icon: UserGroupIcon },
 
 ];

@@ -13,29 +13,42 @@ export default async function ProductDetailPage({
 
   const product = await prisma.product.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      price: true,
+      description: true,
+      craftStory: true,
+      createdAt: true,
+      images: true,                    // ← This is allowed because it's a scalar field
       user: {
-        select: { firstName: true, lastName: true, email: true },
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
       },
+      // reviews optional if you want them later
+      // reviews: { ... }
     },
   });
 
-  if (!product) return notFound();
+  if (!product) notFound();
 
-  const sellerName =
-    product.user
-      ? `${product.user.firstName || ""} ${product.user.lastName || ""}`.trim() ||
-        product.user.email.split("@")[0]
-      : "Artisan";
+  const sellerName = product.user
+    ? `${product.user.firstName || ""} ${product.user.lastName || ""}`.trim() ||
+      product.user.email.split("@")[0]
+    : "Unknown Artisan";
 
-  const craftStory =
-    product.description && product.description.trim().length > 80
+  const craftStory = product.craftStory?.trim()
+    ? product.craftStory.trim()
+    : product.description?.trim() && product.description.trim().length > 80
       ? product.description.trim()
-      : `This ${product.title.toLowerCase()} was born in quiet moments of deep focus and care...\n\n(beautiful fallback story here)`;
+      : `This artisan has not provided a craft story for this product.`;
 
   return (
     <ProductClient
-      product={product}
+      product={product}           // ← product.images is already string[]
       sellerName={sellerName}
       craftStory={craftStory}
     />
