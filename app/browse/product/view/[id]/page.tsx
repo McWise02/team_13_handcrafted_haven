@@ -5,6 +5,7 @@ import ReviewsCarousel from "@/app/ui/reviews/ReviewCarousel";
 import OtherUserProductsCarousel from "@/app/ui/products/OtherUserProductsCarousel";
 import CreateReviewForm from "@/app/ui/reviews/CreateReviewForm";
 import { createReview } from "@/lib/actions/reviews";
+import { getCurrentUser } from "@/lib/get-current-user";
 
 
 type ViewProductPageParams = {
@@ -21,6 +22,7 @@ export default async function ViewProductPage({params} : {params: ViewProductPag
     }
 
     const other_user_products = product.user.products;
+    const currentUser = await getCurrentUser();
 
 return (
   <div className="min-h-screen bg-slate-100">
@@ -48,7 +50,7 @@ return (
               Price
             </p>
             <p className="text-2xl font-semibold text-blue-600">
-              {product.price} €
+              {product.price / 100} €
             </p>
           </div>
         </div>
@@ -109,6 +111,8 @@ return (
             <CreateReviewForm
               action={createReview}
               productId={productId}
+              user = {currentUser}
+
             />
           </div>
         </aside>

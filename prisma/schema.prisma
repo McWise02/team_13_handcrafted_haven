@@ -9,7 +9,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum UserRole {
@@ -52,12 +51,19 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   reviews Review[]
+  craftStory  String?
 }
 
 model Review {
   id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+
+  // Nullable relation to User
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  // For guest reviews
+  firstName String?
+  email     String?
 
   productId String
   product   Product  @relation(fields: [productId], references: [id])
@@ -69,3 +75,4 @@ model Review {
 
   @@index([productId])
 }
+
