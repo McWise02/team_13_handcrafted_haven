@@ -49,10 +49,9 @@ model Product {
   price       Int
   images      String[]
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  reviews    Review[]
-  craftStory String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reviews   Review[]
 }
 
 model Review {

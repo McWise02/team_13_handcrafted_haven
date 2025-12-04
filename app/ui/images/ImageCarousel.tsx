@@ -36,7 +36,7 @@ export default function ImageCarousel({ images, altBase = "Product image" }: Ima
         <Image
           src={images[currentIndex]}
           alt={`${altBase} ${currentIndex + 1}`}
-          fill
+          fill={true}
           className="object-cover"
         />
       </div>

@@ -19,17 +19,13 @@ export default async function ViewProductPage({
   const param = await params;
   const productId = param.id;
   const product = await getProductForViewing(productId);
+  const user = await getCurrentUser()
 
   if (!product) {
     redirect("/browse");
   }
 
-<<<<<<< HEAD
-    const other_user_products = product.user.products;
-    const currentUser = await getCurrentUser();
-=======
   const other_user_products = product.user.products;
->>>>>>> 75bd0e9a34b451ebc18e13d3a467fc94825dc374
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -40,51 +36,6 @@ export default async function ViewProductPage({
             <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
               Product
             </p>
-<<<<<<< HEAD
-            <p className="text-2xl font-semibold text-blue-600">
-              {product.price / 100} €
-            </p>
-          </div>
-        </div>
-      </header>
-
-      {/* Main content */}
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        {/* Left column: Images + Description */}
-        <section className="space-y-6">
-          {/* Image card */}
-          <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-            <ImageCarousel images={product.images} />
-          </div>
-
-          {/* Description card */}
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-            <h2 className="mb-2 text-lg font-semibold text-slate-900">
-              Description
-            </h2>
-            <p className="text-sm leading-relaxed text-slate-700">
-              {product.description}
-            </p>
-          </div>
-
-          {/* Other products from this user */}
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-            <OtherUserProductsCarousel products={other_user_products} />
-          </div>
-        </section>
-
-        {/* Right column: Reviews + Create review */}
-        <aside className="space-y-6">
-          {/* Reviews */}
-          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Reviews
-              </h2>
-              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
-                {product.reviews.length} review
-                {product.reviews.length === 1 ? "" : "s"}
-=======
             <h1 className="mt-1 text-2xl font-semibold text-slate-900">
               {product.title}
             </h1>
@@ -92,7 +43,6 @@ export default async function ViewProductPage({
               Created by{" "}
               <span className="font-medium text-slate-800">
                 {product.user.firstName} {product.user.lastName}
->>>>>>> 75bd0e9a34b451ebc18e13d3a467fc94825dc374
               </span>
             </p>
           </div>
@@ -103,7 +53,7 @@ export default async function ViewProductPage({
                 Price
               </p>
               <p className="text-2xl font-semibold text-blue-600">
-                {product.price} €
+                {product.price / 100} €
               </p>
             </div>
           </div>
@@ -163,16 +113,6 @@ export default async function ViewProductPage({
               </div>
             )}
 
-<<<<<<< HEAD
-            <CreateReviewForm
-              action={createReview}
-              productId={productId}
-              user = {currentUser}
-
-            />
-          </div>
-        </aside>
-=======
             {/* Other products from this user */}
             <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <OtherUserProductsCarousel products={other_user_products} />
@@ -206,11 +146,10 @@ export default async function ViewProductPage({
                 others in the community.
               </p>
 
-              <CreateReviewForm action={createReview} productId={productId} />
+              <CreateReviewForm action={createReview} productId={productId}  user={user} />
             </div>
           </aside>
         </div>
->>>>>>> 75bd0e9a34b451ebc18e13d3a467fc94825dc374
       </div>
     </div>
   );
