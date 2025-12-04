@@ -8,7 +8,7 @@ export default function MarketLogo() {
       
       <div className="flex flex-col leading-none">
         <p className="font-bold tracking-tighter text-lg md:text-2xl lg:text-3xl">
-          Handcrafted Market
+          Handcrafted<br/>Market
         </p>
         <p className="text-[10px] md:text-[11px] tracking-widest opacity-90 -mt-1">
           PLACE
