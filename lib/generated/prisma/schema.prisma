@@ -9,7 +9,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // You still need a `url` here, usually from env:
 }
 
 enum UserRole {
@@ -45,7 +44,8 @@ model Product {
   userId      String
   user        User            @relation(fields: [userId], references: [id])
   category    ProductCategory
-  description String
+  description String?
+  craftStory  String? // ← add this
   price       Int
   images      String[]
 

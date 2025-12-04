@@ -9,8 +9,9 @@ export type ProductCategory = "METALWORK" | "TEXTILE" | "WOODWORK";
 type Product = {
   id?: string;
   title: string;
-  price: number; // stored in cents in DB
+  price: number; // stored in cents
   description?: string | null;
+  craftStory?: string | null;     // ← NEW FIELD
   images?: string[];
   category: ProductCategory;
 };
@@ -39,9 +40,10 @@ export default function ProductForm({ product }: { product?: Product }) {
     }
 
     const data = {
-      title,
-      price,
-      description: descriptionRaw.trim(),
+      title: (formData.get("title") as string).trim(),
+      price: Math.round(Number(formData.get("price")) * 100),
+      description: (formData.get("description") as string)?.trim() || null,
+      craftStory: (formData.get("craftStory") as string)?.trim() || null, // ← NEW
       images: images.length > 0 ? images : [],
       category: formData.get("category") as ProductCategory,
     };
@@ -70,7 +72,6 @@ export default function ProductForm({ product }: { product?: Product }) {
     }
   }
 
-  // Helper to display price in dollars
   const displayPrice = product?.price !== undefined ? (product.price / 100).toFixed(2) : "";
 
   return (
@@ -81,6 +82,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         </h2>
 
         <div className="space-y-6">
+          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Title <span className="text-red-500">*</span>
@@ -96,6 +98,7 @@ export default function ProductForm({ product }: { product?: Product }) {
             />
           </div>
 
+          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Category <span className="text-red-500">*</span>
@@ -106,15 +109,14 @@ export default function ProductForm({ product }: { product?: Product }) {
               required
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
             >
-              <option value="" disabled>
-                Select a category
-              </option>
+              <option value="" disabled>Select a category</option>
               <option value="METALWORK">Metalwork</option>
               <option value="TEXTILE">Textile</option>
               <option value="WOODWORK">Woodwork</option>
             </select>
           </div>
 
+          {/* Price */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Price ($) <span className="text-red-500">*</span>
@@ -132,43 +134,63 @@ export default function ProductForm({ product }: { product?: Product }) {
             <p className="text-xs text-gray-500 mt-1">Enter price in dollars (e.g., 29.99)</p>
           </div>
 
+          {/* Short Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description <span className="text-red-500">*</span>
+              Short Description
             </label>
             <textarea
               name="description"
-              rows={5}
+              rows={4}
               defaultValue={product?.description || ""}
               onChange={() => descriptionError && setDescriptionError("")}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
-              placeholder="Tell customers about your handmade piece..."
+              placeholder="A brief overview for listings and search results..."
             />
             {descriptionError && (
               <p className="text-sm text-red-600 mt-2">{descriptionError}</p>
             )}
           </div>
 
+          {/* === NEW: Craft Story === */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Main Image URL
+              Craft Story <span className="text-amber-600">(Recommended)</span>
+            </label>
+            <textarea
+              name="craftStory"
+              rows={8}
+              defaultValue={product?.craftStory || ""}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border font-medium"
+              placeholder={`Share the story behind this piece...\n\n• What inspired you?\n• What materials did you use?\n• How long did it take to make?\n• Any special techniques?\n\nCustomers love knowing the journey!`}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              This appears on your product page as "The Story Behind This Piece". Use line breaks for beautiful formatting.
+            </p>
+          </div>
+
+          {/* Main Image */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Main Image URL <span className="text-red-500">*</span>
             </label>
             <input
               type="url"
+              required
               value={images[0] || ""}
               onChange={(e) => setImages(e.target.value ? [e.target.value] : [])}
               placeholder="https://example.com/my-product.jpg"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Use a direct link to an image (e.g. from Cloudinary, ImgBB, etc.)
+              Direct link (Cloudinary, ImgBB, PostImage, etc.)
             </p>
             {images[0] && (
-              <div className="mt-3">
+              <div className="mt-4">
                 <img
                   src={images[0]}
                   alt="Preview"
-                  className="h-48 object-cover rounded-lg shadow"
+                  className="h-64 w-full object-cover rounded-lg shadow-lg border"
                   onError={(e) => (e.currentTarget.style.display = "none")}
                 />
               </div>
@@ -176,7 +198,8 @@ export default function ProductForm({ product }: { product?: Product }) {
           </div>
         </div>
 
-        <div className="mt-8 flex gap-4 justify-end">
+        {/* Buttons */}
+        <div className="mt-10 flex gap-4 justify-end">
           <button
             type="button"
             onClick={() => router.back()}
