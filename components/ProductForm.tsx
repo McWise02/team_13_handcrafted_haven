@@ -9,7 +9,7 @@ export type ProductCategory = "METALWORK" | "TEXTILE" | "WOODWORK";
 type Product = {
   id?: string;
   title: string;
-  price: number; // stored in cents
+  price: number;
   description?: string | null;
   craftStory?: string | null;
   images?: string[];
@@ -27,10 +27,6 @@ export default function ProductForm({ product }: { product?: Product }) {
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-
-    const title = (formData.get("title") as string).trim();
-    const price = Math.round(Number(formData.get("price")) * 100);
-
     const descriptionRaw = (formData.get("description") as string) || "";
     if (descriptionRaw.trim() === "") {
       setDescriptionError("Please enter a description for your product.");
@@ -41,7 +37,7 @@ export default function ProductForm({ product }: { product?: Product }) {
     const data = {
       title: (formData.get("title") as string).trim(),
       price: Math.round(Number(formData.get("price")) * 100),
-      description: (formData.get("description") as string)?.trim() || null,
+      description: descriptionRaw.trim() || null,
       craftStory: (formData.get("craftStory") as string)?.trim() || null,
       images: images.length > 0 ? images : [],
       category: formData.get("category") as ProductCategory,
@@ -64,7 +60,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         const error = await res.text();
         alert("Failed to save product: " + error);
       }
-    } catch (err) {
+    } catch {
       alert("Network error. Please try again.");
     } finally {
       setIsLoading(false);
@@ -75,7 +71,7 @@ export default function ProductForm({ product }: { product?: Product }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-8 max-w-2xl mx-auto">
-      <div className="rounded-2xl bg-white p-8 shadow-xl border border-blue-100">
+      <div className="rounded-2xl bg-white p-8 shadow-xl border-2 border-blue-200">
         <h2 className="text-3xl font-bold text-blue-900 mb-8">
           {product ? "Edit Product" : "Create New Product"}
         </h2>
@@ -92,7 +88,9 @@ export default function ProductForm({ product }: { product?: Product }) {
               defaultValue={product?.title}
               required
               maxLength={100}
-              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-shadow"
+              className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       focus:outline-none transition-all"
               placeholder="Hand-forged iron candle holder"
             />
           </div>
@@ -106,7 +104,9 @@ export default function ProductForm({ product }: { product?: Product }) {
               name="category"
               defaultValue={product?.category || ""}
               required
-              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       focus:outline-none transition-all"
             >
               <option value="" disabled>Select a category</option>
               <option value="METALWORK">Metalwork</option>
@@ -127,7 +127,9 @@ export default function ProductForm({ product }: { product?: Product }) {
               min="0"
               defaultValue={displayPrice}
               required
-              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       focus:outline-none transition-all"
               placeholder="29.99"
             />
             <p className="text-xs text-gray-500 mt-2">Enter price in dollars (e.g., 29.99)</p>
@@ -143,11 +145,13 @@ export default function ProductForm({ product }: { product?: Product }) {
               rows={4}
               defaultValue={product?.description || ""}
               onChange={() => descriptionError && setDescriptionError("")}
-              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100 resize-none"
+              className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       focus:outline-none transition-all resize-none"
               placeholder="A brief overview for listings and search results..."
             />
             {descriptionError && (
-              <p className="text-sm text-red-600 mt-2 font-medium">{descriptionError}</p>
+              <p className="text-sm text-red-600 font-medium mt-2">{descriptionError}</p>
             )}
           </div>
 
@@ -160,15 +164,17 @@ export default function ProductForm({ product }: { product?: Product }) {
               name="craftStory"
               rows={8}
               defaultValue={product?.craftStory || ""}
-              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100 resize-none font-medium leading-relaxed"
+              className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       focus:outline-none transition-all resize-none font-medium leading-relaxed"
               placeholder={`Share the story behind this piece...\n\n• What inspired you?\n• What materials did you use?\n• How long did it take to make?\n• Any special techniques?\n\nCustomers love knowing the journey!`}
             />
             <p className="text-xs text-gray-500 mt-2">
-              This appears on your product page as "The Story Behind This Piece". Use line breaks for beautiful formatting.
+              This appears on your product page as "The Story Behind This Piece".
             </p>
           </div>
 
-          {/* Main Image */}
+          {/* Main Image URL */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Main Image URL <span className="text-red-500">*</span>
@@ -179,17 +185,18 @@ export default function ProductForm({ product }: { product?: Product }) {
               value={images[0] || ""}
               onChange={(e) => setImages(e.target.value ? [e.target.value] : [])}
               placeholder="https://example.com/my-product.jpg"
-              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       focus:outline-none transition-all"
             />
-            <p className="text-xs text-gray-500 mt-2">
-              Direct link (Cloudinary, ImgBB, PostImage, etc.)
-            </p>
+            <p className="text-xs text-gray-500 mt-2">Direct link (Cloudinary, ImgBB, etc.)</p>
+
             {images[0] && (
               <div className="mt-6">
                 <img
                   src={images[0]}
                   alt="Preview"
-                  className="w-full h-80 object-cover rounded-xl shadow-xl border-2 border-blue-100"
+                  className="w-full h-80 object-cover rounded-xl shadow-xl border-4 border-blue-200"
                   onError={(e) => (e.currentTarget.style.display = "none")}
                 />
               </div>
@@ -202,14 +209,14 @@ export default function ProductForm({ product }: { product?: Product }) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-8 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+            className="px-8 py-3.5 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="px-10 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
+            className="px-10 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
           >
             {isLoading ? "Saving..." : product ? "Update Product" : "Create Product"}
           </button>
