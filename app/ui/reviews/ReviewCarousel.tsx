@@ -4,7 +4,7 @@ import { useState } from "react";
 
 interface ReviewUser {
   firstName: string;
-  lastName: string;
+  lastName?: string | null;
 }
 
 interface Review {
@@ -12,7 +12,11 @@ interface Review {
   rating: number;
   comment?: string | null;
   createdAt: string | Date;
-  user: ReviewUser;
+
+  user?: ReviewUser | null;
+
+  firstName?: string | null;
+  email?: string | null;
 }
 
 interface ReviewsCarouselProps {
@@ -25,7 +29,7 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   if (!reviews || reviews.length === 0) {
     return (
       <div className="flex w-full items-center justify-center rounded-md bg-gray-100 p-4 text-sm text-gray-500">
-        No reviews yet
+        Not a Review Yet
       </div>
     );
   }
@@ -60,7 +64,16 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
     );
   };
 
-  const fullName = `${current.user.firstName} ${current.user.lastName}`;
+  // Determine display name + email based on whether it's a user or guest
+  const isFromUser = !!current.user;
+
+  const displayName = isFromUser
+    ? `${current.user!.firstName}${
+        current.user!.lastName ? ` ${current.user!.lastName}` : ""
+      }`
+    : current.firstName || "Anonymous";
+
+  const guestEmail = !isFromUser ? current.email : null;
 
   return (
     <div className="relative w-full max-w-xl mx-auto rounded-lg border bg-white p-4 shadow-sm">
@@ -75,7 +88,12 @@ export default function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
         )}
 
         <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-          <span>{fullName}</span>
+          <div className="flex flex-col">
+            <span>{displayName}</span>
+            {guestEmail && (
+              <span className="text-[10px] text-gray-400">{guestEmail}</span>
+            )}
+          </div>
           <span>{formattedDate}</span>
         </div>
       </div>
