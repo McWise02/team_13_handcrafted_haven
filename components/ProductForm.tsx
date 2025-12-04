@@ -11,7 +11,7 @@ type Product = {
   title: string;
   price: number; // stored in cents
   description?: string | null;
-  craftStory?: string | null;     // ← NEW FIELD
+  craftStory?: string | null;
   images?: string[];
   category: ProductCategory;
 };
@@ -29,10 +29,9 @@ export default function ProductForm({ product }: { product?: Product }) {
     const formData = new FormData(e.currentTarget);
 
     const title = (formData.get("title") as string).trim();
-    const price = Math.round(Number(formData.get("price")) * 100); // convert dollars → cents
-    const descriptionRaw = (formData.get("description") as string) || "";
+    const price = Math.round(Number(formData.get("price")) * 100);
 
-    // Validate description (server expects a non-null description)
+    const descriptionRaw = (formData.get("description") as string) || "";
     if (descriptionRaw.trim() === "") {
       setDescriptionError("Please enter a description for your product.");
       setIsLoading(false);
@@ -43,7 +42,7 @@ export default function ProductForm({ product }: { product?: Product }) {
       title: (formData.get("title") as string).trim(),
       price: Math.round(Number(formData.get("price")) * 100),
       description: (formData.get("description") as string)?.trim() || null,
-      craftStory: (formData.get("craftStory") as string)?.trim() || null, // ← NEW
+      craftStory: (formData.get("craftStory") as string)?.trim() || null,
       images: images.length > 0 ? images : [],
       category: formData.get("category") as ProductCategory,
     };
@@ -76,15 +75,15 @@ export default function ProductForm({ product }: { product?: Product }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-8 max-w-2xl mx-auto">
-      <div className="rounded-xl bg-white p-8 shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">
+      <div className="rounded-2xl bg-white p-8 shadow-xl border border-blue-100">
+        <h2 className="text-3xl font-bold text-blue-900 mb-8">
           {product ? "Edit Product" : "Create New Product"}
         </h2>
 
-        <div className="space-y-6">
+        <div className="space-y-7">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -93,21 +92,21 @@ export default function ProductForm({ product }: { product?: Product }) {
               defaultValue={product?.title}
               required
               maxLength={100}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
+              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-shadow"
               placeholder="Hand-forged iron candle holder"
             />
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Category <span className="text-red-500">*</span>
             </label>
             <select
               name="category"
               defaultValue={product?.category || ""}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
+              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
             >
               <option value="" disabled>Select a category</option>
               <option value="METALWORK">Metalwork</option>
@@ -118,7 +117,7 @@ export default function ProductForm({ product }: { product?: Product }) {
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Price ($) <span className="text-red-500">*</span>
             </label>
             <input
@@ -128,15 +127,15 @@ export default function ProductForm({ product }: { product?: Product }) {
               min="0"
               defaultValue={displayPrice}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
+              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
               placeholder="29.99"
             />
-            <p className="text-xs text-gray-500 mt-1">Enter price in dollars (e.g., 29.99)</p>
+            <p className="text-xs text-gray-500 mt-2">Enter price in dollars (e.g., 29.99)</p>
           </div>
 
           {/* Short Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Short Description
             </label>
             <textarea
@@ -144,34 +143,34 @@ export default function ProductForm({ product }: { product?: Product }) {
               rows={4}
               defaultValue={product?.description || ""}
               onChange={() => descriptionError && setDescriptionError("")}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
+              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100 resize-none"
               placeholder="A brief overview for listings and search results..."
             />
             {descriptionError && (
-              <p className="text-sm text-red-600 mt-2">{descriptionError}</p>
+              <p className="text-sm text-red-600 mt-2 font-medium">{descriptionError}</p>
             )}
           </div>
 
-          {/* === NEW: Craft Story === */}
+          {/* Craft Story */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Craft Story <span className="text-amber-600">(Recommended)</span>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Craft Story <span className="text-blue-600 font-medium">(Recommended)</span>
             </label>
             <textarea
               name="craftStory"
               rows={8}
               defaultValue={product?.craftStory || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border font-medium"
+              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100 resize-none font-medium leading-relaxed"
               placeholder={`Share the story behind this piece...\n\n• What inspired you?\n• What materials did you use?\n• How long did it take to make?\n• Any special techniques?\n\nCustomers love knowing the journey!`}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-2">
               This appears on your product page as "The Story Behind This Piece". Use line breaks for beautiful formatting.
             </p>
           </div>
 
           {/* Main Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Main Image URL <span className="text-red-500">*</span>
             </label>
             <input
@@ -180,17 +179,17 @@ export default function ProductForm({ product }: { product?: Product }) {
               value={images[0] || ""}
               onChange={(e) => setImages(e.target.value ? [e.target.value] : [])}
               placeholder="https://example.com/my-product.jpg"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm px-4 py-2 border"
+              className="w-full rounded-lg border-gray-300 px-4 py-3 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-2">
               Direct link (Cloudinary, ImgBB, PostImage, etc.)
             </p>
             {images[0] && (
-              <div className="mt-4">
+              <div className="mt-6">
                 <img
                   src={images[0]}
                   alt="Preview"
-                  className="h-64 w-full object-cover rounded-lg shadow-lg border"
+                  className="w-full h-80 object-cover rounded-xl shadow-xl border-2 border-blue-100"
                   onError={(e) => (e.currentTarget.style.display = "none")}
                 />
               </div>
@@ -199,18 +198,18 @@ export default function ProductForm({ product }: { product?: Product }) {
         </div>
 
         {/* Buttons */}
-        <div className="mt-10 flex gap-4 justify-end">
+        <div className="mt-12 flex gap-4 justify-end">
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            className="px-8 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="px-8 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50 transition shadow-md"
+            className="px-10 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
           >
             {isLoading ? "Saving..." : product ? "Update Product" : "Create Product"}
           </button>
