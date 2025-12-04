@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 const pool = new Pool({
-  connectionString: process.env.DB_CONNECT_URL,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false, // <- accept self-signed certs (dev escape hatch)
   },
