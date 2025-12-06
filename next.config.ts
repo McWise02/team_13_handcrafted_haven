@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "pcpartkphzcdvvxqucwi.supabase.co",
+        hostname: "**",
         port: "",
         pathname: "/**",
       },

@@ -5,10 +5,10 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Search({ placeholder } : {placeholder:string}) {
-    const [query, setQuery] = useState("")
+    const [query, setQuery] = useState("");
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const {replace} = useRouter()
+    const {replace} = useRouter();
 
 
 

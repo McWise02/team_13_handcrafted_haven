@@ -165,7 +165,7 @@ export default function ProductForm({ product }: { product?: Product }) {
               placeholder={`Share the story behind this piece...\n\n• What inspired you?\n• What materials did you use?\n• How long did it take to make?\n• Any special techniques?\n\nCustomers love knowing the journey!`}
             />
             <p className="text-xs text-gray-500 mt-1">
-              This appears on your product page as "The Story Behind This Piece". Use line breaks for beautiful formatting.
+              This appears on your product page as &quot;The Story Behind This Piece&quot;. Use line breaks for beautiful formatting.
             </p>
           </div>
 
