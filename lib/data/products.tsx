@@ -1,5 +1,6 @@
 'use server'
 
+import { ProductCategory } from "../generated/prisma";
 import { prisma } from "../prisma"
 import { unstable_cache } from "next/cache";
 
@@ -17,13 +18,41 @@ const searchWhere = (query: string): any => ({
 export async function getBrowseProducts({
   query = "",
   page = 1,
+  category = "",
+  categories = [],
 }: {
   query?: string;
   page?: number;
+  category?: string;               // single category from dropdown/url
+  categories?: ProductCategory[];  // multiple categories from URL
 } = {}) {
   const skip = (page - 1) * PRODUCTS_PER_PAGE;
 
-  const where = query ? searchWhere(query) : {};
+  const andFilters: any[] = [];
+
+  if (query) {
+    andFilters.push(searchWhere(query));
+  }
+
+  // Decide which categories to use:
+  // - if multiple provided, use those
+  // - otherwise fall back to single `category` if present
+  const effectiveCategories: ProductCategory[] =
+    categories.length > 0
+      ? categories
+      : category
+      ? [category as ProductCategory]
+      : [];
+
+  if (effectiveCategories.length > 0) {
+    andFilters.push({
+      category: {
+        in: effectiveCategories,
+      },
+    });
+  }
+
+  const where = andFilters.length > 0 ? { AND: andFilters } : {};
 
   return await prisma.product.findMany({
     where,
@@ -39,14 +68,39 @@ export async function getBrowseProducts({
 }
 
 // 2. Total pages (respects search query)
-export async function getTotalBrowsePages(query: string = ""): Promise<number> {
-  const where = query ? searchWhere(query) : {};
+export async function getTotalBrowsePages(
+  query: string = "",
+  category?: string,
+  selectedCategories: ProductCategory[] = []
+): Promise<number> {
+  const andFilters: any[] = [];
+
+  if (query) {
+    andFilters.push(searchWhere(query));
+  }
+
+  const effectiveCategories: ProductCategory[] =
+    selectedCategories.length > 0
+      ? selectedCategories
+      : category
+      ? [category as ProductCategory]
+      : [];
+
+  if (effectiveCategories.length > 0) {
+    andFilters.push({
+      category: {
+        in: effectiveCategories, // always an array here
+      },
+    });
+  }
+
+  const where = andFilters.length > 0 ? { AND: andFilters } : {};
 
   const count = await prisma.product.count({ where });
   return Math.max(1, Math.ceil(count / PRODUCTS_PER_PAGE));
 }
 
-// 3. Cached first page (optional – feel free to keep)
+
 export const getCachedInitialProducts = unstable_cache(
   async () => {
     return await prisma.product.findMany({
