@@ -96,7 +96,7 @@ export default function Pagination({
               onClick={() => goToPage(page)}
               className={clsx(
                 "px-3 py-2 rounded-md font-semibold transition",
-                currentPage === page ? "text-white" : "hover:opacity-80"
+                currentPage === page ? "text-blue-600" : "hover:opacity-80"
               )}
             >
               {page}
@@ -117,11 +117,7 @@ export default function Pagination({
         )}
       >
         <ChevronRightIcon className="w-5 h-5" />
-      </button>
-
-      <div className="ml-4 text-sm font-semibold">
-        Page {currentPage} of {totalPages}
-      </div>
+      </button>      
     </div>
   );
 }
