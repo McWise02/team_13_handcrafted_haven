@@ -5,13 +5,11 @@ import { auth } from "@/auth";
 import { notFound, redirect } from "next/navigation";
 import ProductForm from "@/components/ProductForm";
 
-// CRITICAL: You MUST await params in Next.js 16 with Turbopack
 export default async function EditProductPage({
   params,
 }: {
-  params: Promise<{ id: string }>; // ← This is now a Promise!
+  params: Promise<{ id: string }>;
 }) {
-  // UNWRAP the params Promise first
   const { id } = await params;
 
   const session = await auth();
@@ -19,7 +17,6 @@ export default async function EditProductPage({
     redirect("/login");
   }
 
-  // Get current user ID
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
     select: { id: true },
@@ -29,7 +26,6 @@ export default async function EditProductPage({
     redirect("/login");
   }
 
-  // Build where condition separately (fixes Turbopack source map bug)
   const whereCondition = {
     id,
     userId: currentUser.id,
@@ -53,9 +49,11 @@ export default async function EditProductPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen bg-blue-50 py-10">
       <div className="mx-auto max-w-3xl px-6">
-        <h1 className="mb-8 text-3xl font-bold text-gray-900">Edit Product</h1>
+        <h1 className="mb-8 text-4xl font-bold text-blue-900">
+          Edit Product
+        </h1>
         <ProductForm product={product} />
       </div>
     </div>

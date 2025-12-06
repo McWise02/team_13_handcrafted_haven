@@ -33,12 +33,11 @@ export default async function DashboardOverview() {
     }),
   ]);
 
-  // Safe defaults until you add the Order model later
   const totalOrders = 0;
   const totalRevenue = 0.0;
 
   const stats = [
-    { label: "Total Products", value: totalProducts, icon: Package, color: "amber" },
+    { label: "Total Products", value: totalProducts, icon: Package, color: "blue" },
     { label: "Artisans", value: totalUsers, icon: Users, color: "emerald" },
     { label: "Orders", value: totalOrders, icon: ShoppingBag, color: "indigo" },
     { label: "Revenue", value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "rose" },
@@ -53,14 +52,14 @@ export default async function DashboardOverview() {
   };
 
   return (
-    <div className="min-h-screen bg-amber-50">
+    <div className="min-h-screen bg-blue-50">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-amber-900">
+          <h1 className="text-4xl md:text-5xl font-bold text-blue-900">
             Dashboard Overview
           </h1>
-          <p className="mt-2 text-amber-700">
+          <p className="mt-2 text-blue-700">
             Welcome back! Here’s what’s happening in your marketplace today.
           </p>
         </div>
@@ -70,7 +69,7 @@ export default async function DashboardOverview() {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-4 hover:shadow-xl transition"
+              className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-4 hover:shadow-xl transition border border-blue-100"
             >
               <div className={`p-4 rounded-xl bg-${stat.color}-100 text-${stat.color}-600`}>
                 <stat.icon className="h-8 w-8" />
@@ -85,12 +84,12 @@ export default async function DashboardOverview() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Recent Products */}
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-amber-900">Recent Listings</h2>
+              <h2 className="text-2xl font-semibold text-blue-900">Recent Listings</h2>
               <Link
                 href="/dashboard/MyProductsList"
-                className="text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                className="text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"
               >
                 View all <TrendingUp className="h-4 w-4" />
               </Link>
@@ -106,9 +105,9 @@ export default async function DashboardOverview() {
                   <Link
                     key={product.id}
                     href={`/dashboard/MyProductsList/${product.id}`}
-                    className="flex items-center gap-4 p-4 rounded-xl hover:bg-amber-50 transition group"
+                    className="flex items-center gap-4 p-4 rounded-xl hover:bg-blue-50 transition group"
                   >
-                    <div className="relative w-16 h-16 bg-amber-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-16 h-16 bg-blue-100 rounded-lg overflow-hidden flex-shrink-0">
                       {product.images[0] ? (
                         <Image
                           src={product.images[0]}
@@ -117,12 +116,12 @@ export default async function DashboardOverview() {
                           className="object-cover"
                         />
                       ) : (
-                        <Package className="h-8 w-8 text-amber-300 m-auto" />
+                        <Package className="h-8 w-8 text-blue-300 m-auto" />
                       )}
                     </div>
 
                     <div className="flex-1">
-                      <h4 className="font-medium group-hover:text-amber-700">
+                      <h4 className="font-medium group-hover:text-blue-700 transition">
                         {product.title}
                       </h4>
                       <p className="text-sm text-gray-600">
@@ -131,7 +130,7 @@ export default async function DashboardOverview() {
                       </p>
                     </div>
 
-                    <span className="font-bold text-amber-600">
+                    <span className="font-bold text-blue-600">
                       ${((product.price || 0) / 100).toFixed(2)}
                     </span>
                   </Link>
@@ -141,22 +140,22 @@ export default async function DashboardOverview() {
           </div>
 
           {/* Top Artisans */}
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-amber-900">Top Artisans</h2>
-              <Star className="h-6 w-6 text-amber-500" />
+              <h2 className="text-2xl font-semibold text-blue-900">Top Artisans</h2>
+              <Star className="h-6 w-6 text-blue-500" />
             </div>
 
             <div className="space-y-4">
               {topSellers.map((seller: any, idx: number) => (
                 <div
                   key={seller.id}
-                  className="flex items-center justify-between py-3 border-b border-amber-100 last:border-0"
+                  className="flex items-center justify-between py-3 border-b border-blue-100 last:border-0"
                 >
                   <div className="flex items-center gap-4">
-                    <span className="text-2xl font-bold text-amber-200">#{idx + 1}</span>
+                    <span className="text-2xl font-bold text-blue-200">#{idx + 1}</span>
                     <div>
-                      <p className="font-medium">
+                      <p className="font-medium text-gray-900">
                         {seller.firstName} {seller.lastName || ""}
                       </p>
                       <p className="text-sm text-gray-600">
@@ -165,7 +164,7 @@ export default async function DashboardOverview() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center gap-1 text-amber-600">
+                    <div className="flex items-center gap-1 text-blue-600">
                       <TrendingUp className="h-4 w-4" />
                       <span className="text-sm font-medium">Active</span>
                     </div>
@@ -176,7 +175,7 @@ export default async function DashboardOverview() {
 
             <Link
               href="/dashboard/users"
-              className="mt-6 w-full bg-amber-600 text-white rounded-xl py-3 flex items-center justify-center gap-2 hover:bg-amber-700 transition"
+              className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 flex items-center justify-center gap-2 font-medium transition shadow-md"
             >
               <Users className="h-5 w-5" />
               View All Artisans
@@ -188,7 +187,7 @@ export default async function DashboardOverview() {
         <div className="mt-12 text-center">
           <Link
             href="/dashboard/MyProductsList/new"
-            className="inline-flex items-center gap-3 bg-amber-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-amber-700 transition text-lg shadow-lg"
+            className="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-full transition text-lg shadow-xl transform hover:scale-105"
           >
             <PlusCircle className="h-6 w-6" />
             List a New Handmade Item
