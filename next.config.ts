@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "pcpartkphzcdvvxqucwi.supabase.co",
-        hostname: "**",
         port: "",
         pathname: "/**",
       },
