@@ -33,15 +33,6 @@ export default async function EditProductPage({
 
   const product = await prisma.product.findFirst({
     where: whereCondition,
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      craftStory: true,
-      price: true,
-      category: true,
-      images: true,
-    },
   });
 
   if (!product) {
