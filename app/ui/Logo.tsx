@@ -11,7 +11,7 @@ export default function MarketLogo() {
           Handcrafted<br/>Market
         </p>
         <p className="text-[10px] md:text-[11px] tracking-widest opacity-90 -mt-1">
-          PLACE
+          Market PLACE
         </p>
       </div>
     </div>

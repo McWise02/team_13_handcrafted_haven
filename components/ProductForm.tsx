@@ -1,26 +1,59 @@
 // components/ProductForm.tsx
 "use client";
 
+
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {useDropzone} from 'react-dropzone';
+import { useUploadThing } from "@/lib/uploadthing";
+import { Product } from "@/lib/generated/prisma";
 
 export type ProductCategory = "METALWORK" | "TEXTILE" | "WOODWORK";
-
-type Product = {
-  id?: string;
-  title: string;
-  price: number;
-  description?: string | null;
-  craftStory?: string | null;
-  images?: string[];
-  category: ProductCategory;
-};
 
 export default function ProductForm({ product }: { product?: Product }) {
   const router = useRouter();
   const [images, setImages] = useState<string[]>(product?.images || []);
   const [isLoading, setIsLoading] = useState(false);
   const [descriptionError, setDescriptionError] = useState<string>("");
+
+   const [preview, setPreview] = useState<string | null>(null);
+   const [file, setFiles] = useState<File | null>(null);
+   const [progress, setProgress] = useState<number>(0);
+
+   const { startUpload, isUploading } = useUploadThing("mediaUploader",{
+      onClientUploadComplete: (res) => {
+        console.log("Files uploaded:", res);
+        if (res && res.length > 0) {
+          const newImageUrls = res.map((r) => r.ufsUrl);
+
+          setImages((prev) => [...prev, ...newImageUrls]);
+
+        }
+        setFiles(null);
+        setPreview(null);
+        setProgress(0);
+        //alert("Upload Successful!");
+      },
+      onUploadProgress: (progress) => {
+        setProgress(progress);
+      }
+   });
+   const {getRootProps, getInputProps, isDragActive} = useDropzone({
+    accept: {
+      'image/*': [],
+      'video/*': []
+    },
+    multiple: false,
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      console.log(acceptedFiles);
+      const file = acceptedFiles[0];
+      const previewUrl = URL.createObjectURL(file);
+      setPreview(previewUrl);
+      setFiles(file);
+    },
+   });
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,7 +102,12 @@ export default function ProductForm({ product }: { product?: Product }) {
 
   const displayPrice = product?.price !== undefined ? (product.price / 100).toFixed(2) : "";
 
+
+
+  
+
   return (
+    
     <form onSubmit={onSubmit} className="space-y-8 max-w-2xl mx-auto">
       <div className="rounded-2xl bg-white p-8 shadow-xl border-2 border-blue-200">
         <h2 className="text-3xl font-bold text-blue-900 mb-8">
@@ -174,7 +212,7 @@ export default function ProductForm({ product }: { product?: Product }) {
             </p>
           </div>
 
-          {/* Main Image URL */}
+          {/* Main Image URL*/}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Main Image URL <span className="text-red-500">*</span>
@@ -189,9 +227,9 @@ export default function ProductForm({ product }: { product?: Product }) {
                        focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
                        focus:outline-none transition-all"
             />
-            <p className="text-xs text-gray-500 mt-2">Direct link (Cloudinary, ImgBB, etc.)</p>
+            <p className="text-xs text-gray-500 mt-2">Direct link (Cloudinary, ImgBB, etc.)</p> 
 
-            {images[0] && (
+           {/*images[0] && (
               <div className="mt-6">
                 <img
                   src={images[0]}
@@ -200,11 +238,83 @@ export default function ProductForm({ product }: { product?: Product }) {
                   onError={(e) => (e.currentTarget.style.display = "none")}
                 />
               </div>
-            )}
+            )*/}
+            
           </div>
         </div>
+        <div className={`border-2 border-dashed border-gray-300 rounded-lg p-6 mt-8 text-center cursor-pointer 
+        transition hover:border-blue-500 hover:bg-blue-50 
+        ${isDragActive ? "border-blue-500 bg-blue-50" : ""}`} 
+        {...getRootProps()}>
+          <input {...getInputProps()} />
+          {!preview ? (
+            isDragActive ?
+              <p className="text-gray-700">Drop the files here ...</p> :
+              <p className="text-gray-700">Drag 'n' drop some files here, or click to select files</p>
+          ) : (
+            <div className="mt-6">
+              {file?.type.startsWith('image/') ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  width={400}
+                  height={400}
+                  className="mx-auto rounded-xl shadow-xl border-4 border-blue-200"
+                />
+              ) : (
+                <video
+                  src={preview}
+                  controls
+                  className="mx-auto rounded-xl shadow-xl border-4 border-blue-200"
+                />
 
-        {/* Buttons */}
+              )}
+              <p className="mt-4 text-gray-700">{file?.name}</p>
+            </div>
+
+          )} 
+          </div>
+          {
+            file && !isUploading && (
+              <div className="mt-4 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => startUpload([file])}
+                  className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  Upload File
+                </button>
+              </div>
+            )
+          }
+
+        {isUploading && (
+          <div className="mt-4">
+            <p className="text-gray-700 mb-2">Uploading: {Math.round(progress * 100)}%</p>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div
+                className="bg-blue-600 h-4 rounded-full transition-all"
+                style={{ width: `${progress * 100}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
+
+        <div className="border-t mt-8 pt-6 flex justify-end">
+          <h2 className="text-sm text-gray-600 mr-auto self-center">Uploaded Images: {images.length}</h2>
+          <div className="flex space-x-2">
+            {images.map((imgUrl, index) => (
+              <img
+                key={index}
+                src={imgUrl}
+                alt={`Uploaded ${index + 1}`}
+                className="w-16 h-16 object-cover rounded-lg border-2 border-gray-300"
+              />
+            ))}
+            </div>
+          </div>
+          
+
         <div className="mt-12 flex gap-4 justify-end">
           <button
             type="button"
@@ -225,3 +335,4 @@ export default function ProductForm({ product }: { product?: Product }) {
     </form>
   );
 }
+
