@@ -174,7 +174,7 @@ export default async function DashboardOverview() {
             </div>
 
             <Link
-              href="/dashboard/users"
+              href="/dashboard/Artisans"
               className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 flex items-center justify-center gap-2 font-medium transition shadow-md"
             >
               <Users className="h-5 w-5" />
@@ -186,7 +186,7 @@ export default async function DashboardOverview() {
         {/* Quick Action */}
         <div className="mt-12 text-center">
           <Link
-            href="/dashboard/MyProductsList/new"
+            href="/dashboard/NewItems"
             className="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-full transition text-lg shadow-xl transform hover:scale-105"
           >
             <PlusCircle className="h-6 w-6" />
