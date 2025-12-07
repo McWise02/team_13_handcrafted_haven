@@ -86,21 +86,23 @@ export default async function ViewProductPage({
             </div>
 
             {product.craftStory && (
-              <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-sm ring-1 ring-amber-200">
+              <div className="rounded-xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6 shadow-sm ring-1 ring-blue-200">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 rounded-full bg-amber-200 p-3">
-                    <svg className="h-7 w-7 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-shrink-0 rounded-full bg-blue-600 p-3 shadow-md">
+                    <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
-                  <div>
-                    <h2 className="mb-3 text-xl font-semibold text-amber-900">
+                  <div className="flex-1">
+                    <h2 className="mb-3 text-xl font-semibold text-slate-900">
                       The Craft Story
                     </h2>
-                    <div className="prose prose-sm text-amber-800 max-w-none">
-                      {product.craftStory.split("\n").map((p, i) => (
-                        <p key={i} className={i > 0 ? "mt-4" : ""}>{p}</p>
+                    <div className="prose prose-sm text-slate-700 max-w-none leading-relaxed">
+                      {product.craftStory.split("\n").map((paragraph, index) => (
+                        <p key={index} className={index > 0 ? "mt-4" : ""}>
+                          {paragraph}
+                        </p>
                       ))}
                     </div>
                   </div>
