@@ -162,7 +162,7 @@ export default function RegisterForm() {
             htmlFor="lastName"
             className="mb-1 block text-sm font-medium text-slate-200"
           >
-            Email
+            Last Name
           </label>
           <input
             id="lastName"
