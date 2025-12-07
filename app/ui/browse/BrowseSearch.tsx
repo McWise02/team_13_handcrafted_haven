@@ -41,28 +41,22 @@ export default function Search({ placeholder }: { placeholder: string }) {
   }
 
 function handleCategoryToggle(category: ProductCategory) {
-  // categories here is the current state value from useState
   const exists = categories.includes(category);
   const next = exists
     ? categories.filter((c) => c !== category)
     : [...categories, category];
 
-  // 1) update state
   setCategories(next);
 
-  // 2) update URL (side effect) – outside of setState
   const params = new URLSearchParams(searchParams);
 
-  // remove all existing categories from URL and then add the current selection
   params.delete("categories");
   next.forEach((cat) => params.append("categories", cat));
 
-  // reset page when filters change
   params.set("page", "1");
 
   replace(`${pathname}?${params.toString()}`);
 }
-  // debounce query changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       handleSearch(query);
@@ -71,7 +65,6 @@ function handleCategoryToggle(category: ProductCategory) {
     return () => clearTimeout(timeoutId);
   }, [query]);
 
-  // keep local state in sync when user navigates via back/forward, etc.
   useEffect(() => {
     setQuery(searchParams.get("query")?.toString() ?? "");
     setCategories(searchParams.getAll("categories") as ProductCategory[]);
