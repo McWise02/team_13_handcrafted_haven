@@ -1,7 +1,7 @@
 'use server'
 
 import Search from "@/app/ui/browse/BrowseSearch";
-import Pagination from "@/app/ui/browse/Pagination";
+import Pagination from "../ui/products/Pagination";
 import { getTotalBrowsePages, getBrowseProducts } from "@/lib/data/products";
 import { Suspense } from "react";
 import Image from "next/image";
@@ -69,7 +69,7 @@ export default async function CustomerBrowsePage(props: BrowsePageProps) {
       </Suspense>
         {/* Pagination */}
         <div className="mt-16 flex justify-center">
-          <Pagination totalPages={totalPages} />
+          <Pagination currentPage={currentPage} totalPages={totalPages} />
         </div>
       </div>
     </div>
