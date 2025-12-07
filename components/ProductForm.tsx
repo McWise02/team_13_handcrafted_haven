@@ -293,7 +293,7 @@ export default function ProductForm({ product }: { product?: Product }) {
             <div className="w-full bg-gray-200 rounded-full h-4">
               <div
                 className="bg-blue-600 h-4 rounded-full transition-all"
-                style={{ width: `${progress * 100}%` }}
+                style={{ width: `${progress * 1}%` }}
               ></div>
             </div>
           </div>
