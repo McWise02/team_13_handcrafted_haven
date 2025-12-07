@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {useDropzone} from 'react-dropzone';
 import { useUploadThing } from "@/lib/uploadthing";
+import { Product } from "@/lib/generated/prisma";
 
 export type ProductCategory = "METALWORK" | "TEXTILE" | "WOODWORK";
 
