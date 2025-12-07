@@ -1,158 +1,167 @@
+//'use server'
+import React from "react";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Tag, Package } from "lucide-react";
+import { Package } from "lucide-react";
 
+//export const dynamic = "force-dynamic";
 export const revalidate = 60;
+
+type PageProps = {
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
+};
 
 const PAGE_SIZE = 6;
 
-export default async function ProductsPage({ searchParams }) {
-  // Read page number from URL
-  const page = Number(searchParams?.page) || 1;
-  const offset = (page - 1) * PAGE_SIZE;
 
-  // Query products
-  const [products, totalCount] = await Promise.all([
+export default async function CustomerBrowsePage(props: PageProps) {
+    const searchParams = await props.searchParams;
+  const page = Number(searchParams?.page || 1);
+
+  const [products, totalProducts] = await Promise.all([
     prisma.product.findMany({
-      skip: offset,
+      skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      include: {
-        user: true,
-        _count: { select: { reviews: true } },
-      },
-      orderBy: { createdAt: "desc" }, // newest first
+      orderBy: { createdAt: "desc" },
+      include: { user: true, _count: { select: { reviews: true } } },
     }),
     prisma.product.count(),
   ]);
 
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const totalPages = Math.ceil(totalProducts / PAGE_SIZE);
 
   return (
     <div className="max-w-7xl mx-auto p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-          <Package className="w-7 h-7 text-indigo-600" />
-          New Products
-        </h1>
-        <p className="text-sm text-slate-600 mt-1">
-          Newly added handmade products by talented artisans.
-        </p>
+      <div className="flex items-center gap-2 mb-6">
+        <Package className="w-6 h-6 text-indigo-600" />
+        <h1 className="text-3xl font-bold">Newly Created Products</h1>
       </div>
 
-      {/* Empty State */}
-      {products.length === 0 && (
+      {/* Grid */}
+      {products.length === 0 ? (
         <div className="p-10 bg-white border rounded-xl text-center shadow">
-          <p className="text-slate-600 text-sm">No products found.</p>
+          <p className="text-gray-600">No products found.</p>
         </div>
-      )}
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="bg-white border rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden"
+            >
+              {/* Image */}
+              <div className="relative w-full h-48 bg-gray-100">
+                {product.images?.[0] ? (
+                  <Image
+                    src={product.images[0]}
+                    alt={`${product.title} by ${product.user.firstName} ${product.user.lastName}`}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">
+                    No Image
+                  </div>
+                )}
+              </div>
 
-      {/* Product Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white border rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
-          >
-            {/* Product Image */}
-            <div className="relative w-full h-48 bg-slate-100">
-              {product.images?.length > 0 ? (
-                <Image
-                  src={product.images[0]}
-                  alt={product.title}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-slate-500">
-                  No Image
-                </div>
-              )}
-            </div>
+              <div className="p-5 space-y-2">
+                {/* Title */}
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {product.title}
+                </h2>
 
-            <div className="p-5 space-y-3">
-              {/* Title */}
-              <h2 className="text-lg font-semibold text-slate-900">
-                {product.title}
-              </h2>
-
-              {/* Category */}
-              <span className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-slate-100 rounded-full text-slate-700">
-                <Tag className="w-3 h-3" />
-                {product.category}
-              </span>
-
-              {/* Price */}
-              <p className="text-indigo-600 font-semibold text-base">
-                ${product.price}
-              </p>
-
-              {/* Artisan */}
-              <p className="text-xs text-slate-600">
-                By{" "}
-                <span className="font-medium text-slate-800">
-                  {product.user.firstName} {product.user.lastName}
-                </span>
-              </p>
-
-              {/* Craft Story Snippet */}
-              {product.craftStory && (
-                <p className="text-sm text-slate-700 line-clamp-2">
-                  {product.craftStory}
+                {/* Category */}
+                <p className="text-xs text-gray-600">
+                  Category: <span className="font-medium">{product.category}</span>
                 </p>
-              )}
 
-              {/* Footer */}
-              <div className="flex justify-between items-center pt-3 border-t">
-                <span className="text-xs text-slate-500">
+                {/* Price */}
+                <p className="text-indigo-600 font-bold text-base">
+                  ${product.price}
+                </p>
+
+                {/* Artisan */}
+                <p className="text-sm text-gray-700">
+                  By{" "}
+                  <span className="font-semibold">
+                    {product.user.firstName} {product.user.lastName}
+                  </span>
+                </p>
+
+                {/* Craft Story */}
+                {product.craftStory && (
+                  <p className="text-sm text-gray-700 line-clamp-2">
+                    {product.craftStory}
+                  </p>
+                )}
+
+                {/* Reviews */}
+                <p className="text-xs text-gray-500">
                   {product._count.reviews} reviews
-                </span>
+                </p>
 
+                {/* View button */}
                 <Link
                   href={`/dashboard/products/${product.id}`}
-                  className="text-sm text-indigo-600 hover:text-indigo-800"
+                  className="mt-3 block bg-black text-white text-center px-4 py-2 rounded-lg text-sm hover:bg-gray-800"
                 >
-                  View →
+                  View Details
                 </Link>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-center gap-4 mt-10">
-        {/* Previous */}
-        <Link
-          href={`?page=${page - 1}`}
-          className={`px-4 py-2 rounded-lg border flex items-center gap-2 text-sm ${
-            page <= 1
-              ? "opacity-40 cursor-not-allowed"
-              : "hover:bg-slate-50"
-          }`}
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Previous
-        </Link>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-10 flex-wrap">
+          {/* Previous */}
+          <Link
+            href={page > 1 ? `?page=${page - 1}` : "#"}
+            className={`px-4 py-2 border rounded-lg ${
+              page <= 1
+                ? "opacity-40 pointer-events-none"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            Previous
+          </Link>
 
-        <span className="text-sm text-slate-700">
-          Page {page} of {totalPages}
-        </span>
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+            <Link
+              key={num}
+              href={`?page=${num}`}
+              className={`px-3 py-1 border rounded-lg ${
+                num === page
+                  ? "bg-indigo-600 text-white"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
+            >
+              {num}
+            </Link>
+          ))}
 
-        {/* Next */}
-        <Link
-          href={`?page=${page + 1}`}
-          className={`px-4 py-2 rounded-lg border flex items-center gap-2 text-sm ${
-            page >= totalPages
-              ? "opacity-40 cursor-not-allowed"
-              : "hover:bg-slate-50"
-          }`}
-        >
-          Next
-          <ChevronRight className="w-4 h-4" />
-        </Link>
-      </div>
+          {/* Next */}
+          <Link
+            href={page < totalPages ? `?page=${page + 1}` : "#"}
+            className={`px-4 py-2 border rounded-lg ${
+              page >= totalPages
+                ? "opacity-40 pointer-events-none"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            Next
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
