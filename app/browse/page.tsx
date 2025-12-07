@@ -7,20 +7,38 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, User, Clock } from "lucide-react";
+import { ProductCategory } from "@/lib/generated/prisma";
 
 type BrowsePageProps = {
   searchParams?: Promise<{
     query?: string;
     page?: string;
+    category?: string;
+    categories?: string | string[]; // this is what can really happen
   }>;
 };
 
 export default async function CustomerBrowsePage(props: BrowsePageProps) {
   const searchParams = await props.searchParams;
+
+  const category = searchParams?.category?.trim() || "";
   const query = searchParams?.query?.trim() || "";
+
+  const rawCategories = searchParams?.categories;
+
+  const selectedCategories: ProductCategory[] = Array.isArray(rawCategories)
+    ? (rawCategories as ProductCategory[])
+    : rawCategories
+    ? [rawCategories as ProductCategory]
+    : [];
+
   const currentPage = Math.max(1, Number(searchParams?.page) || 1);
 
-  const totalPages = await getTotalBrowsePages(query);
+  const totalPages = await getTotalBrowsePages(
+    query,
+    category,
+    selectedCategories
+  );
 
   return (
     <div className="min-h-screen bg-blue-50 py-12">
@@ -41,10 +59,14 @@ export default async function CustomerBrowsePage(props: BrowsePageProps) {
         </div>
 
         {/* Product Grid – streamed with skeleton */}
-        <Suspense fallback={<ProductGridSkeleton />}>
-          <ProductGrid query={query} currentPage={currentPage} />
-        </Suspense>
-
+      <Suspense fallback={<ProductGridSkeleton />}>
+        <ProductGrid
+          query={query}
+          currentPage={currentPage}
+          category={category}
+          categories={selectedCategories} // or whatever your var is called
+        />
+      </Suspense>
         {/* Pagination */}
         <div className="mt-16 flex justify-center">
           <Pagination totalPages={totalPages} />
@@ -58,12 +80,20 @@ export default async function CustomerBrowsePage(props: BrowsePageProps) {
 async function ProductGrid({
   query,
   currentPage,
+  category,
+  categories,
 }: {
   query: string;
   currentPage: number;
+  category: string;
+  categories: ProductCategory[];
 }) {
-  const products = await getBrowseProducts({ query, page: currentPage });
-
+  const products = await getBrowseProducts({
+    query,
+    page: currentPage,
+    category,
+    categories,
+  });
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
   const getSellerName = (user: any) =>
     user
