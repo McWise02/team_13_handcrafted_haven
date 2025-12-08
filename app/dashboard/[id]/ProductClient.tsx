@@ -1,4 +1,3 @@
-// app/dashboard/[id]/ProductClient.tsx
 "use client";
 
 import Image from "next/image";
@@ -10,12 +9,18 @@ export function ProductClient({
   product,
   sellerName,
   craftStory,
+  seller,
 }: {
   product: any;
   sellerName: string;
   craftStory: string;
+  seller: {
+    firstName: string | null;
+    email: string;
+  };
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const formatPrice = (cents: number) =>
     new Intl.NumberFormat("en-US", {
@@ -39,7 +44,7 @@ export function ProductClient({
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-3xl shadow-2xl overflow-hidden border border-blue-100">
-            {/* Image Gallery */}
+            {/* IMAGE GALLERY */}
             <div className="relative">
               <div className="aspect-square relative bg-blue-50">
                 {mainImage ? (
@@ -53,7 +58,7 @@ export function ProductClient({
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <div className="bg-blue-100 border-2 border-dashed border-blue-300 rounded-xl w-64 h-64" />
+                    <div className="bg-blue-100 border-2 border-dashed border-blue-300 rounded-xl w-64 h-64"></div>
                   </div>
                 )}
               </div>
@@ -78,7 +83,7 @@ export function ProductClient({
               )}
             </div>
 
-            {/* Product Info */}
+            {/* PRODUCT INFO */}
             <div className="flex flex-col justify-between p-8 lg:p-12">
               <div>
                 <h1 className="text-4xl lg:text-5xl font-bold text-blue-900 mb-6 leading-tight">
@@ -127,8 +132,12 @@ export function ProductClient({
                 </div>
               </div>
 
+              {/* CONTACT SELLER BUTTON */}
               <div className="mt-12">
-                <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-xl lg:text-2xl py-7 rounded-2xl transition-all flex items-center justify-center gap-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                <button
+                  onClick={() => setIsContactModalOpen(true)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-xl lg:text-2xl py-7 rounded-2xl transition-all flex items-center justify-center gap-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                >
                   <ShoppingBag className="h-8 w-8" />
                   Contact Seller to Purchase
                 </button>
@@ -138,17 +147,12 @@ export function ProductClient({
         </div>
       </div>
 
-      {/* Craft Story Modal – Now Beautifully Blue */}
+      {/* CRAFT STORY MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
-          <div
-            className="absolute inset-0"
-            onClick={() => setIsModalOpen(false)}
-            aria-hidden="true"
-          />
+          <div className="absolute inset-0" onClick={() => setIsModalOpen(false)} />
 
           <div className="relative bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
-            {/* Modal Header – Elegant Blue Gradient */}
             <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-10 text-white relative overflow-hidden">
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -161,17 +165,16 @@ export function ProductClient({
                 <ScrollText className="h-12 w-12" />
                 <h2 className="text-4xl font-bold">The Craft Story</h2>
               </div>
-              <p className="text-xl text-blue-100 opacity-90">
-                The soul behind &ldquo;{product.title}&rdquo;
-              </p>
+
+              <p className="text-xl text-blue-100">The soul behind “{product.title}”</p>
             </div>
 
-            {/* Modal Body */}
             <div className="p-10 bg-blue-50/80 overflow-y-auto max-h-[60vh]">
               <div className="flex items-center gap-5 mb-8">
                 <div className="w-20 h-20 bg-blue-200 rounded-full flex items-center justify-center shadow-inner">
                   <User className="h-12 w-12 text-blue-800" />
                 </div>
+
                 <div>
                   <p className="text-sm font-medium text-blue-700">Created with love by</p>
                   <p className="text-3xl font-bold text-blue-900">{sellerName}</p>
@@ -184,6 +187,39 @@ export function ProductClient({
                     {paragraph.trim()}
                   </p>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CONTACT SELLER MODAL */}
+      {isContactModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+          <div className="absolute inset-0" onClick={() => setIsContactModalOpen(false)} />
+
+          <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-8 text-white relative">
+              <button
+                onClick={() => setIsContactModalOpen(false)}
+                className="absolute top-5 right-5 p-3 bg-white/20 hover:bg-white/30 rounded-full backdrop-blur-sm transition-all"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <h2 className="text-3xl font-bold">Seller Contact Info</h2>
+              <p className="mt-1 text-blue-200 text-sm">Reach out to the artisan directly</p>
+            </div>
+
+            <div className="p-8 space-y-6 text-gray-800">
+              <div>
+                <p className="text-sm font-medium text-blue-600">First Name</p>
+                <p className="text-xl font-semibold">{seller.firstName}</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-blue-600">Email</p>
+                <p className="text-lg">{seller.email}</p>
               </div>
             </div>
           </div>
